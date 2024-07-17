@@ -1,14 +1,9 @@
 import React from "react";
-import Header from "./components/Header";
 import ReactDOM from "react-dom/client";
+import Layout from "./components/Layout";
 
 const App: React.FC = () => {
-  return (
-    <div>
-      <Header />
-      <h1>Welcome to Electron with React and TypeScript</h1>
-    </div>
-  );
+  return <Layout />;
 };
 
 const rootElement = document.getElementById("root");
