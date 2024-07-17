@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import LeftSidebarIcon from "../assets/icons/left-sidebar.svg";
+import RightSidebarIcon from "../assets/icons/right-sidebar.svg";
 
 const Layout: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -10,13 +12,21 @@ const Layout: React.FC = () => {
       <header className="col-span-4 bg-gray-200 p-4 flex justify-between items-center">
         <div>
           <button onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}>
-            Toggle Left Sidebar
+            <img
+              src={LeftSidebarIcon}
+              alt="Toggle Left Sidebar"
+              className="h-6 w-6"
+            />
           </button>
         </div>
         <div>Header with Tabs</div>
         <div>
           <button onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
-            Toggle Right Sidebar
+            <img
+              src={RightSidebarIcon}
+              alt="Toggle Left Sidebar"
+              className="h-6 w-6"
+            />
           </button>
         </div>
       </header>

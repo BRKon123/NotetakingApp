@@ -12,12 +12,27 @@ rules.push({
   ],
 });
 
+rules.push({
+  test: /\.svg$/,
+  use: [
+    {
+      loader: "@svgr/webpack",
+      options: {
+        svgo: false,
+      },
+    },
+    {
+      loader: "file-loader",
+    },
+  ],
+});
+
 export const rendererConfig: Configuration = {
   module: {
     rules,
   },
   plugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".svg"],
   },
 };
