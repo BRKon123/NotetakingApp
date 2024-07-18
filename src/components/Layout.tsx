@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import LeftSidebarIcon from "../assets/icons/left-sidebar.svg";
 import RightSidebarIcon from "../assets/icons/right-sidebar.svg";
+import DefaultPage from "./page/DefaultPage";
 
 const Layout: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -9,7 +10,7 @@ const Layout: React.FC = () => {
   return (
     <div className="h-screen grid grid-rows-[auto_1fr] grid-cols-[auto_auto_1fr_auto]">
       {/* Header */}
-      <header className="col-span-4 bg-gray-200 p-4 flex justify-between items-center">
+      <header className="col-span-4 bg-gray-200 p-4 flex justify-between items-center border-b border-gray-300">
         <div>
           <button onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}>
             <img
@@ -32,22 +33,24 @@ const Layout: React.FC = () => {
       </header>
 
       {/* Left Sidebar Menu, fixed width */}
-      <div className="bg-gray-200 p-4 w-8"></div>
+      <div className="bg-gray-200 p-4 w-8 border-r border-gray-300"></div>
 
       {/* Left Sidebar, width adjustable */}
       <div
         className={`bg-gray-100 transition-all duration-300 ${
-          isLeftSidebarOpen ? "w-64" : "w-0"
+          isLeftSidebarOpen ? "w-64 border-r border-gray-300" : "w-0"
         }`}
       ></div>
 
       {/* Main Content */}
-      <main className="bg-white p-4 col-span-1">Main Content</main>
+      <main className="bg-white p-4 col-span-1">
+        <DefaultPage />
+      </main>
 
       {/* Right Sidebar, width adjustable, content is scrollable */}
       <div
         className={`bg-gray-100 transition-all duration-300 ${
-          isRightSidebarOpen ? "w-64" : "w-0"
+          isRightSidebarOpen ? "w-64 border-l border-gray-300" : "w-0"
         }`}
       ></div>
     </div>
