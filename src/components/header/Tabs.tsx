@@ -1,6 +1,7 @@
 // src/components/Tabs.tsx
 import React, { useState } from "react";
 import AddIcon from "../../assets/icons/add-outline.svg";
+import CloseIcon from "../../assets/icons/close-outline.svg";
 
 interface TabsProps {
   tabs: string[];
@@ -9,10 +10,17 @@ interface TabsProps {
 
 const Tabs: React.FC = () => {
   const [tabs, setTabs] = useState(["Tab 1"]);
+  const [hoveredTab, setHoveredTab] = useState<number | null>(null);
 
   const addNewTab = () => {
     setTabs([...tabs, `Tab ${tabs.length + 1}`]);
   };
+
+  const closeTab = (index: number) => {
+    setTabs(tabs.filter((_, i) => i !== index));
+  };
+
+  console.log("Hovered tab:", hoveredTab);
 
   return (
     // outer div ensures that the tabs take up the remaining space in whatever view we use
@@ -25,10 +33,27 @@ const Tabs: React.FC = () => {
             className="flex basis-40 justify-center items-center h-8 border-r px-1 border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis"
           >
             <div
-              className="h-7 basis-36 flex justify-center items-center text-sm hover:bg-slate-300 rounded"
+              className="h-7 basis-36 flex items-center justify-between text-sm hover:bg-slate-300 rounded"
+              onMouseEnter={() => setHoveredTab(index)}
+              onMouseLeave={() => setHoveredTab(null)}
               title={tab}
             >
-              {tab}
+              <span>{tab}</span>
+              <button
+                // if this is the button we are hovering over, show close button
+                className={`${
+                  index === hoveredTab
+                    ? "justify-center items-center flex-shrink-0"
+                    : "hidden"
+                }`}
+                onClick={() => closeTab(index)}
+              >
+                <img
+                  src={CloseIcon}
+                  alt="Close tab"
+                  className="h-5 w-5 flex-shrink-0"
+                />
+              </button>
             </div>
           </div>
         ))}
@@ -39,12 +64,6 @@ const Tabs: React.FC = () => {
         >
           <img src={AddIcon} alt="Add icon" className="h-5 w-5" />
         </button>
-        {/* <button
-          className="ml-2 text-xl h-6 w-6 flex items-center justify-center hover:bg-slate-400"
-          onClick={addNewTab}
-        >
-          <span>+</span>
-        </button> */}
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const Layout: React.FC = () => {
   return (
     <div className="h-screen grid grid-rows-[auto_1fr] grid-cols-[auto_auto_1fr_auto]">
       {/* Header */}
-      <header className="col-span-4 bg-gray-50 p-2 flex justify-between items-center border-b border-gray-300">
+      <header className="col-span-4 bg-gray-50 px-2 py-1 flex justify-between items-center border-b border-gray-300">
         <div className="h-6 w-6 mr-4">
           <button onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}>
             <img
