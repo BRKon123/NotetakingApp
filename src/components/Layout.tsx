@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import LeftSidebarIcon from "../assets/icons/left-sidebar.svg";
 import RightSidebarIcon from "../assets/icons/right-sidebar.svg";
-import DefaultPage from "./page/DefaultPage";
+import DefaultPage from "./maincontent/DefaultPage";
+import Tabs from "./header/Tabs";
 
 const Layout: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -10,8 +11,8 @@ const Layout: React.FC = () => {
   return (
     <div className="h-screen grid grid-rows-[auto_1fr] grid-cols-[auto_auto_1fr_auto]">
       {/* Header */}
-      <header className="col-span-4 bg-gray-200 p-4 flex justify-between items-center border-b border-gray-300">
-        <div>
+      <header className="col-span-4 bg-gray-50 p-2 flex justify-between items-center border-b border-gray-300">
+        <div className="h-6 w-6 mr-4">
           <button onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}>
             <img
               src={LeftSidebarIcon}
@@ -20,8 +21,8 @@ const Layout: React.FC = () => {
             />
           </button>
         </div>
-        <div>Header with Tabs</div>
-        <div>
+        <Tabs />
+        <div className="h-6 w-6 ml-4">
           <button onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
             <img
               src={RightSidebarIcon}
@@ -33,7 +34,7 @@ const Layout: React.FC = () => {
       </header>
 
       {/* Left Sidebar Menu, fixed width */}
-      <div className="bg-gray-200 p-4 w-8 border-r border-gray-300"></div>
+      <div className="bg-gray-100 p-4 w-8 border-r border-gray-300"></div>
 
       {/* Left Sidebar, width adjustable */}
       <div
