@@ -22,10 +22,10 @@ const Tabs: React.FC = () => {
           //  outer div so that when you hover over tab, it does not colour all the way to tab border
           <div
             key={index}
-            className="flex basis-40 justify-center items-center h-8 border-r px-1 border-gray-300"
+            className="flex basis-40 justify-center items-center h-8 border-r px-1 border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis"
           >
             <div
-              className="h-7 basis-36 flex justify-center items-center text-sm whitespace-nowrap overflow-hidden text-ellipsis hover:bg-slate-300 rounded"
+              className="h-7 basis-36 flex justify-center items-center text-sm hover:bg-slate-300 rounded"
               title={tab}
             >
               {tab}
