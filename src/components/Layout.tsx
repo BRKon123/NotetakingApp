@@ -9,9 +9,20 @@ const Layout: React.FC = () => {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   return (
-    <div className="h-screen grid grid-rows-[auto_1fr] grid-cols-[auto_auto_1fr_auto]">
+    <div
+      className="h-screen grid grid-rows-[auto_1fr] grid-cols-[auto_auto_1fr_auto]"
+      style={{
+        gridTemplateAreas: `
+          ". . header ."
+          "leftSidebarMenu leftSidebar mainContent rightSidebar"
+        `,
+      }}
+    >
       {/* Header */}
-      <header className="col-span-4 bg-gray-50 px-2 py-1 flex justify-between items-center border-b border-gray-300">
+      <header
+        className="bg-gray-50 px-2 pt-3 flex justify-between items-center border-b border-gray-300 overflow-hidden"
+        style={{ gridArea: "header" }}
+      >
         <div className="h-6 w-6 mr-4">
           <button onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}>
             <img
@@ -26,7 +37,7 @@ const Layout: React.FC = () => {
           <button onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}>
             <img
               src={RightSidebarIcon}
-              alt="Toggle Left Sidebar"
+              alt="Toggle Right Sidebar"
               className="h-6 w-6"
             />
           </button>
@@ -34,17 +45,21 @@ const Layout: React.FC = () => {
       </header>
 
       {/* Left Sidebar Menu, fixed width */}
-      <div className="bg-gray-100 p-4 w-8 border-r border-gray-300"></div>
+      <div
+        className="bg-gray-100 p-4 w-8 border-r border-gray-300"
+        style={{ gridArea: "leftSidebarMenu" }}
+      ></div>
 
       {/* Left Sidebar, width adjustable */}
       <div
         className={`bg-gray-100 transition-all duration-300 ${
           isLeftSidebarOpen ? "w-64 border-r border-gray-300" : "w-0"
         }`}
+        style={{ gridArea: "leftSidebar" }}
       ></div>
 
       {/* Main Content */}
-      <main className="bg-white p-4 col-span-1">
+      <main className="bg-white p-4" style={{ gridArea: "mainContent" }}>
         <DefaultPage />
       </main>
 
@@ -53,6 +68,7 @@ const Layout: React.FC = () => {
         className={`bg-gray-100 transition-all duration-300 ${
           isRightSidebarOpen ? "w-64 border-l border-gray-300" : "w-0"
         }`}
+        style={{ gridArea: "rightSidebar" }}
       ></div>
     </div>
   );
