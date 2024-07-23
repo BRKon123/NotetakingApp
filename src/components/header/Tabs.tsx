@@ -30,7 +30,7 @@ const Tabs: React.FC = () => {
   };
 
   return (
-    // outer div ensures that the tabs take up the remaining space in whatever view we use
+    // outer div makes sure that the tabs take up the remaining space in whatever view we use
     <div className="flex-1 overflow-hidden">
       <div className="flex overflow-hidden items-center h-8">
         {tabs.map((tab, index) => (
