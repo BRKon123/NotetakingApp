@@ -1,5 +1,6 @@
 // src/components/Tabs.tsx
 import React, { useState } from "react";
+import { useTabs } from "../../context/TabsContext";
 import AddIcon from "../../assets/icons/add-outline.svg";
 import CloseIcon from "../../assets/icons/close-outline.svg";
 
@@ -9,32 +10,9 @@ interface TabsProps {
 }
 
 const Tabs: React.FC = () => {
-  const [tabs, setTabs] = useState(["Tab 1"]);
+  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabs(); // Hook up closeTab function from TabsContext
   const [hoveredTab, setHoveredTab] = useState<number | null>(null); //to control the styling of the tab we hover over
-  const [activeTab, setActiveTab] = useState<number | null>(0);
   console.log("tab no: ", activeTab);
-
-  const addNewTab = () => {
-    setTabs((tabs) => [...tabs, `Tab ${tabs.length + 1}`]);
-    setActiveTab(tabs.length); // Set the newly added tab as active, remember tabs not updated yet, not until re render
-  };
-
-  const closeTab = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation(); // Stop the event from bubbling up to the parent div
-
-    setTabs((tabs) => tabs.filter((_, i) => i !== index));
-
-    if (tabs.length === 1) {
-      addNewTab();
-    } else if (index === activeTab) {
-      setActiveTab(activeTab - 1); // Set the last tab as active, remember tabs not updated yet,
-    } else {
-      setActiveTab(tabs.length - 2); // Keep the active tab as it is
-    }
-  };
 
   return (
     // outer div makes sure that the tabs take up the remaining space in whatever view we use
@@ -59,7 +37,7 @@ const Tabs: React.FC = () => {
               }`}
               onMouseEnter={() => setHoveredTab(index)}
               onMouseLeave={() => setHoveredTab(null)}
-              onClick={() => setActiveTab(index)}
+              onClick={() => selectTab(index)}
               title={tab}
             >
               <span className="whitespace-nowrap overflow-hidden text-ellipsis">
