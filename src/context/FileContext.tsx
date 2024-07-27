@@ -1,9 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-
-interface File {
-  fileName: string;
-  filePath: string;
-}
+import File from "../models/File";
 
 interface FileContextProps {
   files: File[];
@@ -19,7 +15,6 @@ const FileContext = createContext<FileContextProps | undefined>(undefined);
 export const FileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const vaultPath = "path/to/vault";
   const [files, setFiles] = useState<File[]>([]);
   const [activeFile, setActiveFile] = useState<number | null>(null);
 
