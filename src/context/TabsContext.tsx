@@ -1,7 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 
+interface Tab {
+  fileName: string;
+  filePath: string;
+}
+
 interface TabsContextProps {
-  tabs: string[];
+  tabs: Tab[];
   activeTab: number;
   selectTab: (index: number) => void;
   addNewTab: () => void;
@@ -21,11 +26,16 @@ export const useTabs = () => {
 export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [tabs, setTabs] = useState(["Tab 1"]);
+  const [tabs, setTabs] = useState<Tab[]>([
+    { fileName: "Tab 1", filePath: "/path/to/tab1" },
+  ]);
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const addNewTab = () => {
-    setTabs((tabs) => [...tabs, `Tab ${tabs.length + 1}`]);
+    setTabs((tabs) => [
+      ...tabs,
+      { fileName: `Tab ${tabs.length + 1}`, filePath: "/path/to/tab2" },
+    ]);
     setActiveTab(tabs.length);
   };
 
@@ -38,7 +48,7 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
     //if only one tab left, do nothing
     if (tabs.length !== 1) {
       setTabs((tabs) => tabs.filter((_, i) => i !== index));
-      if (index <= activeTab) {
+      if (index <= activeTab && index > 0) {
         setActiveTab(activeTab - 1);
       }
     }

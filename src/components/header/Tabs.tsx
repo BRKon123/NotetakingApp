@@ -38,10 +38,10 @@ const Tabs: React.FC = () => {
               onMouseEnter={() => setHoveredTab(index)}
               onMouseLeave={() => setHoveredTab(null)}
               onClick={() => selectTab(index)}
-              title={tab}
+              title={tab.fileName}
             >
               <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-                {tab}
+                {tab.fileName}
               </span>
               {/* if this is the button we are hovering over, show close button */}
               {index === hoveredTab && (
