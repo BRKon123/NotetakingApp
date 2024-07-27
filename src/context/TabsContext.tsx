@@ -1,9 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-
-interface Tab {
-  fileName: string;
-  filePath: string;
-}
+import Tab from "../models/Tab";
 
 interface TabsContextProps {
   tabs: Tab[];
