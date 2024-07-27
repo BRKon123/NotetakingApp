@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
-import Vault from "../models/Vault";
+import VaultInfo from "../models/VaultInfo";
 
 interface VaultContextProps {
-  vaultInfo: Vault;
-  setVaultInfo: (vault: Vault) => void;
+  vaultInfo: VaultInfo;
+  setVaultInfo: (vault: VaultInfo) => void;
 }
 
 const VaultContext = createContext<VaultContextProps | undefined>(undefined);
@@ -11,7 +11,7 @@ const VaultContext = createContext<VaultContextProps | undefined>(undefined);
 export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [vaultInfo, setVaultInfo] = useState<Vault>({
+  const [vaultInfo, setVaultInfo] = useState<VaultInfo>({
     vaultName: "Example Vault",
     vaultPath:
       "/Users/ruthvikkonduru/Documents/Projects/NotetakingApp/example-vault",

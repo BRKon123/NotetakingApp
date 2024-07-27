@@ -1,4 +1,4 @@
-export default interface Vault {
+export default interface VaultInfo {
   vaultName: string;
   vaultPath: string;
 }
