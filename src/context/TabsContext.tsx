@@ -11,14 +11,6 @@ interface TabsContextProps {
 
 const TabsContext = createContext<TabsContextProps | undefined>(undefined);
 
-export const useTabs = () => {
-  const context = useContext<TabsContextProps | undefined>(TabsContext);
-  if (!context) {
-    throw new Error("useTabs must be used within a TabsProvider");
-  }
-  return context as TabsContextProps;
-};
-
 export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -70,4 +62,12 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
     </TabsContext.Provider>
   );
+};
+
+export const useTabsContext = () => {
+  const context = useContext<TabsContextProps | undefined>(TabsContext);
+  if (!context) {
+    throw new Error("useTabs must be used within a TabsProvider");
+  }
+  return context as TabsContextProps;
 };

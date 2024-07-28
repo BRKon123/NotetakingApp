@@ -1,8 +1,8 @@
 import React from "react";
-import { useTabs } from "../../context/TabsContext";
+import { useTabsContext } from "../../context/TabsContext";
 
 const DefaultPage: React.FC = () => {
-  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabs(); // Hook up closeTab function from TabsContext
+  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
   return (
     <div className="flex flex-col items-center justify-center h-full text-center">
       <h1 className="text-2xl font-bold mb-4">No file is open</h1>

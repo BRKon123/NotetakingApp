@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import File from "../models/File";
+import { useVaultContext } from "../context/VaultContext";
 
 interface FileContextProps {
   files: File[];
@@ -15,6 +16,7 @@ const FileContext = createContext<FileContextProps | undefined>(undefined);
 export const FileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const vaultPath = useVaultContext().vaultInfo.vaultPath;
   const [files, setFiles] = useState<File[]>([]);
   const [activeFile, setActiveFile] = useState<number | null>(null);
 
@@ -23,11 +25,13 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const deleteFile = async (fileName: string) => {
-    const deletedFile = await ipcRenderer.invoke("create-file", fileName);
+    const filePath = path.join(vaultPath, fileName);
+    const deletedFile = await ipcRenderer.invoke("create-file", filePath);
   };
 
   const openFile = async (fileName: string) => {
-    const newFile = await ipcRenderer.invoke("create-file", fileName);
+    const filePath = path.join(vaultPath, fileName);
+    const newFile = await ipcRenderer.invoke("create-file", filePath);
   };
 
   const closeFile = () => {

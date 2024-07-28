@@ -1,6 +1,6 @@
 // src/components/Tabs.tsx
 import React, { useState } from "react";
-import { useTabs } from "../../context/TabsContext";
+import { useTabsContext } from "../../context/TabsContext";
 import AddIcon from "../../assets/icons/add-outline.svg";
 import CloseIcon from "../../assets/icons/close-outline.svg";
 
@@ -10,7 +10,7 @@ interface TabsProps {
 }
 
 const Tabs: React.FC = () => {
-  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabs(); // Hook up closeTab function from TabsContext
+  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
   const [hoveredTab, setHoveredTab] = useState<number | null>(null); //to control the styling of the tab we hover over
   console.log("tab no: ", activeTab);
 

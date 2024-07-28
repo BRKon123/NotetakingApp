@@ -2,12 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Layout from "./components/Layout";
 import { TabsProvider } from "./context/TabsContext";
+import { VaultProvider } from "./context/VaultContext";
 
 const App: React.FC = () => {
   return (
-    <TabsProvider>
-      <Layout />
-    </TabsProvider>
+    <VaultProvider>
+      <TabsProvider>
+        <Layout />
+      </TabsProvider>
+    </VaultProvider>
   );
 };
 

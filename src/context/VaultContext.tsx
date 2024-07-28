@@ -23,3 +23,11 @@ export const VaultProvider: React.FC<{ children: React.ReactNode }> = ({
     </VaultContext.Provider>
   );
 };
+
+export const useVaultContext = () => {
+  const context = useContext<VaultContextProps | undefined>(VaultContext);
+  if (!context) {
+    throw new Error("use vault context must be used within a VaultProvider");
+  }
+  return context as VaultContextProps;
+};
