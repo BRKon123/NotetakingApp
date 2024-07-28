@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from "react";
-import File from "../models/File";
+import FileInfo from "../models/FileInfo";
 import { useVaultContext } from "../context/VaultContext";
 
 interface FileContextProps {
-  files: File[];
+  files: FileInfo[];
   activeFile: number | null;
-  addFile: (file: File) => void;
+  addFile: (file: FileInfo) => void;
   deleteFile: (fileName: string) => void;
   openFile: (fileName: string) => void;
   closeFile: () => void;
@@ -17,10 +17,10 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const vaultPath = useVaultContext().vaultInfo.vaultPath;
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileInfo[]>([]);
   const [activeFile, setActiveFile] = useState<number | null>(null);
 
-  const addFile = (file: File) => {
+  const addFile = (file: FileInfo) => {
     setFiles((prevFiles) => [...prevFiles, file]);
   };
 

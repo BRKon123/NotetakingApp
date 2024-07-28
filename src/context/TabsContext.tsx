@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
-import Tab from "../models/Tab";
+import TabInfo from "../models/TabInfo";
 
 interface TabsContextProps {
-  tabs: Tab[];
+  tabs: TabInfo[];
   activeTab: number;
   selectTab: (index: number) => void;
   addNewTab: () => void;
@@ -14,7 +14,7 @@ const TabsContext = createContext<TabsContextProps | undefined>(undefined);
 export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [tabs, setTabs] = useState<Tab[]>([
+  const [tabs, setTabs] = useState<TabInfo[]>([
     { fileName: "Tab 1", filePath: "/path/to/tab1" },
   ]);
   const [activeTab, setActiveTab] = useState<number>(0);

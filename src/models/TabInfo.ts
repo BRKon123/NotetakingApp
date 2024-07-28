@@ -1,4 +1,4 @@
-export default interface Tab {
+export default interface TabInfo {
   fileName: string;
   filePath: string;
 }
