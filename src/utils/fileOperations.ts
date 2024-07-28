@@ -7,8 +7,8 @@ export const deleteFile = async (vaultPath: string, fileName: string) => {
   return deletedFile;
 };
 
-export const openFile = async (vaultPath: string, fileName: string) => {
+export const createFile = async (vaultPath: string, fileName: string) => {
   const filePath = path.join(vaultPath, fileName);
-  const newFile = await ipcRenderer.invoke("open-file", filePath);
+  const newFile = await ipcRenderer.invoke("create-file", filePath);
   return newFile;
 };
