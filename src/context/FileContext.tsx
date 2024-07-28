@@ -1,56 +1,45 @@
-import React, { createContext, useContext, useState } from "react";
+// FileContext.tsx
+import React, { createContext, useState, ReactNode, useContext } from "react";
 import FileInfo from "../models/FileInfo";
-import { useVaultContext } from "../context/VaultContext";
 
-interface FileContextProps {
+// Define the shape of the context state
+interface FileContextState {
   files: FileInfo[];
-  activeFile: number | null;
   addFile: (file: FileInfo) => void;
-  deleteFile: (fileName: string) => void;
-  openFile: (fileName: string) => void;
-  closeFile: () => void;
+  removeFile: (fileName: string) => void;
 }
 
-const FileContext = createContext<FileContextProps | undefined>(undefined);
+// Create the context with default values
+const FileContext = createContext<FileContextState | undefined>(undefined);
 
-export const FileProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const vaultPath = useVaultContext().vaultInfo.vaultPath;
+// Create the provider component
+const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [files, setFiles] = useState<FileInfo[]>([]);
-  const [activeFile, setActiveFile] = useState<number | null>(null);
 
   const addFile = (file: FileInfo) => {
     setFiles((prevFiles) => [...prevFiles, file]);
   };
 
-  const deleteFile = async (fileName: string) => {
-    const filePath = path.join(vaultPath, fileName);
-    const deletedFile = await ipcRenderer.invoke("create-file", filePath);
-  };
-
-  const openFile = async (fileName: string) => {
-    const filePath = path.join(vaultPath, fileName);
-    const newFile = await ipcRenderer.invoke("create-file", filePath);
-  };
-
-  const closeFile = () => {
-    setActiveFile(null);
+  const removeFile = (fileName: string) => {
+    setFiles((prevFiles) =>
+      prevFiles.filter((file) => file.fileName !== fileName)
+    );
   };
 
   return (
-    <FileContext.Provider
-      value={{ files, activeFile, addFile, deleteFile, openFile, closeFile }}
-    >
+    <FileContext.Provider value={{ files, addFile, removeFile }}>
       {children}
     </FileContext.Provider>
   );
 };
 
-export const useFileContext = () => {
+// Custom hook to use the FileContext
+const useFileContext = (): FileContextState => {
   const context = useContext(FileContext);
   if (!context) {
     throw new Error("useFileContext must be used within a FileProvider");
   }
   return context;
 };
+
+export { FileProvider, useFileContext };
