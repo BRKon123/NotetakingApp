@@ -59,14 +59,17 @@ ipcMain.handle("create-file", async (event, filePath: string) => {
   if (fs.existsSync(filePath)) {
     return false; // File already exists
   } else {
-    fs.writeFileSync(filePath, "", "utf-8");
+    fs.writeFileSync(filePath, "", "utf-8"); // throws error if file creation fails
     return true; // New file created
   }
 });
 
 ipcMain.handle("delete-file", async (event, filePath: string) => {
-  fs.unlinkSync(filePath);
-  return filePath;
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath); // throws error if file deletion fails
+    return true;
+  }
+  return false;
 });
 
 ipcMain.on("set-title", (event, title) => {
