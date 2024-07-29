@@ -1,13 +1,11 @@
 import React from "react";
 import { useTabsContext } from "../../context/TabsContext";
-import { useVaultContext } from "../../context/VaultContext";
-import { createFile } from "../../utils/fileOperations";
+import useFileOperations from "../../hooks/useFileOperations";
 
 const DefaultPage: React.FC = () => {
-  const { vaultInfo } = useVaultContext();
-
+  const { createFile } = useFileOperations();
   const createNewNoteHandler = () => {
-    createFile(vaultInfo.vaultPath, "newly.txt");
+    createFile("New Note");
   };
 
   const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
