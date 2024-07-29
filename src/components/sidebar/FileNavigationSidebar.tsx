@@ -1,19 +1,26 @@
 import React from "react";
 import useFileOperations from "../../hooks/useFileOperations";
+import CreateIcon from "../../assets/icons/create-outline.svg";
+import ReorderIcon from "../../assets/icons/reorder-outline.svg";
 
 const FileNavigationSidebar = () => {
   const { files, createFile, deleteFile } = useFileOperations();
 
   return (
-    <div className="w-80 border border-gray-300 p-4">
+    <div className="border border-gray-300 p-4 overflow-hidden">
       <div className="flex justify-between mb-4">
         <button
-          className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+          className="text-white py-1 px-3 rounded hover:bg-slate-300"
           onClick={() => createFile("string.txt")}
         >
-          Add File
+          <img src={CreateIcon} alt="Create new file" className="h-6 w-6" />
         </button>
-        {/* Add other options here */}
+        <button
+          className="text-white py-1 px-3 rounded hover:bg-slate-300"
+          onClick={() => createFile("string.txt")}
+        >
+          <img src={ReorderIcon} alt="Change sort order" className="h-6 w-6" />
+        </button>
       </div>
       <div className="max-h-96 overflow-y-auto">
         {files.map((file) => (

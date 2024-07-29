@@ -72,8 +72,17 @@ ipcMain.handle("delete-file", async (event, filePath: string) => {
   return false;
 });
 
-ipcMain.on("set-title", (event, title) => {
-  const webContents = event.sender;
-  const win = BrowserWindow.fromWebContents(webContents);
-  win.setTitle(title);
+ipcMain.handle("list-files", async (event, directoryPath) => {
+  if (
+    fs.existsSync(directoryPath) &&
+    fs.lstatSync(directoryPath).isDirectory()
+  ) {
+    const fileInfos = fs.readdirSync(directoryPath).map((fileName) => ({
+      fileName,
+      filePath: path.join(directoryPath, fileName),
+    }));
+    return fileInfos; // Return list of files
+  } else {
+    return []; // Return empty array if directory does not exist
+  }
 });

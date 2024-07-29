@@ -1,15 +1,13 @@
 // FileContext.tsx
 import React, { createContext, useState, ReactNode, useContext } from "react";
 import FileInfo from "../models/FileInfo";
-import {
-  createFileInFileSystem,
-  deleteFileInFileSystem,
-} from "../utils/fileSystemOperations";
 import { useVaultContext } from "./VaultContext";
+import { listFilesInFileSystem } from "../utils/fileSystemOperations";
 
 // Define the shape of the context state
 interface FileContextProps {
   files: FileInfo[];
+  setFilesState: (files: FileInfo[]) => void;
   addFileToState: (filename: string, filePath: string) => void;
   removeFileFromState: (fileName: string) => void;
 }
@@ -20,18 +18,18 @@ const FileContext = createContext<FileContextProps | undefined>(undefined);
 // Create the provider component
 const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { vaultInfo } = useVaultContext();
-  const [files, setFiles] = useState<FileInfo[]>([]);
+  const [files, setFilesState] = useState<FileInfo[]>([]);
 
   const addFileToState = (fileName: string, filePath: string) => {
     const file: FileInfo = {
       fileName,
       filePath,
     };
-    setFiles((prevFiles) => [...prevFiles, file]);
+    setFilesState((prevFiles) => [...prevFiles, file]);
   };
 
   const removeFileFromState = (filePath: string) => {
-    setFiles((prevFiles) =>
+    setFilesState((prevFiles) =>
       prevFiles.filter((file) => file.filePath !== filePath)
     );
   };
@@ -40,6 +38,7 @@ const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     <FileContext.Provider
       value={{
         files,
+        setFilesState,
         addFileToState,
         removeFileFromState,
       }}
