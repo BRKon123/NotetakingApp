@@ -56,8 +56,12 @@ app.on("activate", () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 ipcMain.handle("create-file", async (event, filePath: string) => {
-  fs.writeFileSync(filePath, "", "utf-8");
-  return { fileName: path.basename(filePath), filePath };
+  if (fs.existsSync(filePath)) {
+    return false; // File already exists
+  } else {
+    fs.writeFileSync(filePath, "", "utf-8");
+    return true; // New file created
+  }
 });
 
 ipcMain.handle("delete-file", async (event, filePath: string) => {

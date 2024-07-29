@@ -3,6 +3,7 @@ import LeftSidebarIcon from "../assets/icons/left-sidebar.svg";
 import RightSidebarIcon from "../assets/icons/right-sidebar.svg";
 import DefaultPage from "./maincontent/DefaultPage";
 import Tabs from "./header/Tabs";
+import FileNavigationSidebar from "./sidebar/FileNavigationSidebar";
 
 const Layout: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
@@ -56,7 +57,9 @@ const Layout: React.FC = () => {
           isLeftSidebarOpen ? "w-64 border-r border-gray-300" : "w-0"
         }`}
         style={{ gridArea: "leftSidebar" }}
-      ></div>
+      >
+        <FileNavigationSidebar />
+      </div>
 
       {/* Main Content */}
       <main className="bg-white p-4" style={{ gridArea: "mainContent" }}>

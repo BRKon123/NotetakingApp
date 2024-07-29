@@ -10,8 +10,8 @@ import { useVaultContext } from "./VaultContext";
 // Define the shape of the context state
 interface FileContextProps {
   files: FileInfo[];
-  addFile: (file: string) => void;
-  removeFile: (fileName: string) => void;
+  addFileToState: (filename: string, filePath: string) => void;
+  removeFileFromState: (fileName: string) => void;
 }
 
 // Create the context with default values
@@ -22,21 +22,28 @@ const FileProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { vaultInfo } = useVaultContext();
   const [files, setFiles] = useState<FileInfo[]>([]);
 
-  const addFile = (fileName: string) => {
+  const addFileToState = (fileName: string, filePath: string) => {
     const file: FileInfo = {
       fileName,
+      filePath,
     };
     setFiles((prevFiles) => [...prevFiles, file]);
   };
 
-  const removeFile = (fileName: string) => {
+  const removeFileFromState = (filePath: string) => {
     setFiles((prevFiles) =>
-      prevFiles.filter((file) => file.fileName !== fileName)
+      prevFiles.filter((file) => file.filePath !== filePath)
     );
   };
 
   return (
-    <FileContext.Provider value={{ files, addFile, removeFile }}>
+    <FileContext.Provider
+      value={{
+        files,
+        addFileToState,
+        removeFileFromState,
+      }}
+    >
       {children}
     </FileContext.Provider>
   );
