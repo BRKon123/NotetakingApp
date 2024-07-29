@@ -6,6 +6,10 @@ import { createFile } from "../../utils/fileOperations";
 const DefaultPage: React.FC = () => {
   const { vaultInfo } = useVaultContext();
 
+  const createNewNoteHandler = () => {
+    createFile(vaultInfo.vaultPath, "newly.txt");
+  };
+
   const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
   return (
     <div className="flex flex-col items-center justify-center h-full text-center">
@@ -13,7 +17,7 @@ const DefaultPage: React.FC = () => {
       <div className="space-y-2 text-pink-500">
         <button
           className="block hover:underline"
-          onClick={() => createFile(vaultInfo.vaultPath, "newly.txt")}
+          onClick={() => createNewNoteHandler()}
         >
           Create new note (⌘ N)
         </button>
