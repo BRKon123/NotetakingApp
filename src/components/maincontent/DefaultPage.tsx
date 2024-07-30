@@ -3,9 +3,11 @@ import { useTabsContext } from "../../context/TabsContext";
 import useFileOperations from "../../hooks/useFileOperations";
 
 const DefaultPage: React.FC = () => {
-  const { createFile } = useFileOperations();
-  const createNewNoteHandler = () => {
-    createFile("New Note");
+  const { files, createFile } = useFileOperations();
+  const { navigateActiveTab } = useTabsContext();
+  const createNewNoteHandler = async () => {
+    const newFileInfo = await createFile(`Untitiled ${files.length + 1}.md`);
+    navigateActiveTab(newFileInfo); // Navigate to newly created note
   };
 
   const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext

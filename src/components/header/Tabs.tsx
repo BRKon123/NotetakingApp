@@ -10,7 +10,8 @@ interface TabsProps {
 }
 
 const Tabs: React.FC = () => {
-  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
+  const { tabs, activeTab, selectTab, addNewDefaultTab, closeTab } =
+    useTabsContext(); // Hook up closeTab function from TabsContext
   const [hoveredTab, setHoveredTab] = useState<number | null>(null); //to control the styling of the tab we hover over
   console.log("tab no: ", activeTab);
 
@@ -62,7 +63,7 @@ const Tabs: React.FC = () => {
         {/* add styling to button to ensure */}
         <button
           className="ml-2 hover:bg-slate-300 rounded flex items-center justify-center h-7 w-7 flex-shrink-0"
-          onClick={addNewTab}
+          onClick={addNewDefaultTab}
         >
           <img src={AddIcon} alt="Add icon" className="h-5 w-5" />
         </button>
