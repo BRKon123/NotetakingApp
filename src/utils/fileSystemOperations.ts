@@ -1,4 +1,3 @@
-import path from "path-browserify"; // can add polyfills to webpack for browser env, but this is easier lol
 import FileInfo from "../models/FileInfo";
 
 export const createFileInFileSystem = async (

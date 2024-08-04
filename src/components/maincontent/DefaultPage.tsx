@@ -10,7 +10,16 @@ const DefaultPage: React.FC = () => {
     navigateActiveTab(newFileInfo); // Navigate to newly created note
   };
 
-  const { tabs, activeTab, selectTab, addNewTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
+  const { activeTab, closeTab } = useTabsContext(); // Hook up closeTab function from TabsContext
+
+  const closeButtonClickHandler = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation(); //do try to select this file when close
+    closeTab(index);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-full text-center">
       <h1 className="text-2xl font-bold mb-4">No file is open</h1>
@@ -27,7 +36,7 @@ const DefaultPage: React.FC = () => {
         </button>
         <button
           className="block hover:underline"
-          onClick={(e) => closeTab(e, activeTab)}
+          onClick={(e) => closeButtonClickHandler(e, activeTab)}
         >
           Close
         </button>

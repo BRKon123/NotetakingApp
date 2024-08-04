@@ -7,12 +7,14 @@ import {
 } from "../utils/fileSystemOperations";
 import { useVaultContext } from "../context/VaultContext";
 import { useFileContext } from "../context/FileContext";
+import { useTabsContext } from "../context/TabsContext";
 import path from "path-browserify"; // can add polyfills to webpack for browser env, but this is easier lol
 import FileInfo from "../models/FileInfo";
 
 // use callback to ensure that same function used unless the vault path changes
 const useFileOperations = () => {
   const { vaultInfo } = useVaultContext();
+  const { tabs, closeTabsByFilePath } = useTabsContext();
   const { files, setFilesState, addFileToState, removeFileFromState } =
     useFileContext();
 

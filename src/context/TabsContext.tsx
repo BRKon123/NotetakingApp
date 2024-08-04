@@ -8,7 +8,8 @@ interface TabsContextProps {
   navigateActiveTab: (tabInfo: TabInfo) => void;
   addNewDefaultTab: () => void;
   addNewTab: (tabInfo: TabInfo) => void;
-  closeTab: (event: React.MouseEvent<HTMLButtonElement>, index: number) => void;
+  closeTab: (index: number) => void;
+  closeTabsByFilePath: (filePath: string) => void;
 }
 
 const TabsContext = createContext<TabsContextProps | undefined>(undefined);
@@ -19,6 +20,7 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [tabs, setTabs] = useState<TabInfo[]>([
     { fileName: "Default Tab", filePath: null },
   ]);
+
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const addNewDefaultTab = () => {
@@ -30,12 +32,7 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
     setActiveTab(() => tabs.length);
   };
 
-  const closeTab = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    index: number
-  ) => {
-    event.stopPropagation(); // don't call addNewTab when close button is clicked
-
+  const closeTab = (index: number) => {
     if (tabs.length !== 1) {
       setTabs((tabs) => tabs.filter((_, i) => i !== index));
       if (index <= activeTab && index > 0) {
@@ -45,6 +42,28 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
       //if only one tab left make this default page
       setTabs((tabs) => [{ fileName: `Default Tab`, filePath: null }]);
     }
+  };
+
+  const closeTabsByFilePath = (filePath: string) => {
+    setTabs((prevTabs) => {
+      //use block to filter previous tabs and update active tab if necessary
+      let newActiveTab = activeTab;
+      const newTabs = prevTabs.filter((tab, index) => {
+        const shouldClose = tab.filePath === filePath;
+        if (shouldClose && index <= activeTab) {
+          newActiveTab -= 1;
+        }
+        return !shouldClose;
+      });
+
+      if (newTabs.length === 0) {
+        newTabs.push({ fileName: "Default Tab", filePath: null });
+        newActiveTab = 0;
+      }
+
+      setActiveTab(newActiveTab);
+      return newTabs;
+    });
   };
 
   const selectTab = (index: number) => {
@@ -70,6 +89,7 @@ export const TabsProvider: React.FC<{ children: React.ReactNode }> = ({
         addNewDefaultTab,
         addNewTab,
         closeTab,
+        closeTabsByFilePath,
       }}
     >
       {children}

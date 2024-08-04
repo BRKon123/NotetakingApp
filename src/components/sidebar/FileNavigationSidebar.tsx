@@ -4,10 +4,12 @@ import CreateIcon from "../../assets/icons/create-outline.svg";
 import ReorderIcon from "../../assets/icons/reorder-outline.svg";
 import { useTabsContext } from "../../context/TabsContext";
 import FileInfo from "../../models/FileInfo";
+import path from "path-browserify";
 
 const FileNavigationSidebar = () => {
   const { files, createFile, deleteFile } = useFileOperations();
-  const { tabs, activeTab, addNewTab, navigateActiveTab } = useTabsContext();
+  const { tabs, activeTab, addNewTab, navigateActiveTab, closeTabsByFilePath } =
+    useTabsContext();
 
   const createNewNoteHandler = async () => {
     const newFileInfo = await createFile(`Untitiled ${files.length + 1}.md`);
@@ -24,10 +26,12 @@ const FileNavigationSidebar = () => {
 
   const deleteFileButtonHandler = (
     event: React.MouseEvent<HTMLButtonElement>,
-    fileName: string
+    fileName: string,
+    filePath: string
   ) => {
     event.stopPropagation(); //do try to select this file when delete
     deleteFile(fileName);
+    closeTabsByFilePath(filePath); // Close any tabs associated with the deleted file
   };
 
   return (
@@ -55,7 +59,9 @@ const FileNavigationSidebar = () => {
               </button>
               <button
                 className="text-red-500 hover:underline"
-                onClick={() => deleteFile(file.fileName)}
+                onClick={(e) =>
+                  deleteFileButtonHandler(e, file.fileName, file.filePath)
+                }
               >
                 Delete
               </button>

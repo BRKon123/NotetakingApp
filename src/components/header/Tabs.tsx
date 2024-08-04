@@ -13,7 +13,14 @@ const Tabs: React.FC = () => {
   const { tabs, activeTab, selectTab, addNewDefaultTab, closeTab } =
     useTabsContext(); // Hook up closeTab function from TabsContext
   const [hoveredTab, setHoveredTab] = useState<number | null>(null); //to control the styling of the tab we hover over
-  console.log("tab no: ", activeTab);
+
+  const closeButtonClickHandler = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    event.stopPropagation(); //do try to select this file when close
+    closeTab(index);
+  };
 
   return (
     // outer div makes sure that the tabs take up the remaining space in whatever view we use
@@ -48,7 +55,7 @@ const Tabs: React.FC = () => {
               {index === hoveredTab && (
                 <button
                   className="justify-center items-center flex-shrink-0"
-                  onClick={(e) => closeTab(e, index)}
+                  onClick={(e) => closeButtonClickHandler(e, index)}
                 >
                   <img
                     src={CloseIcon}
