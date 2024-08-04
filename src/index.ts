@@ -94,3 +94,18 @@ ipcMain.handle("list-files", async (event, directoryPath) => {
     return []; // Return empty array if directory does not exist
   }
 });
+
+// function to load file content
+ipcMain.handle("load-file", async (event, filePath) => {
+  if (fs.existsSync(filePath)) {
+    try {
+      const content = fs.readFileSync(filePath, "utf-8");
+      return { success: true, content };
+    } catch (error) {
+      console.error("Error reading the file:", error);
+      return { success: false, error: error.message };
+    }
+  } else {
+    return { success: false, error: "File does not exist" };
+  }
+});

@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import LeftSidebarIcon from "../assets/icons/left-sidebar.svg";
 import RightSidebarIcon from "../assets/icons/right-sidebar.svg";
 import DefaultPage from "./maincontent/DefaultPage";
+import NotePage from "./maincontent/NotePage";
 import Tabs from "./header/Tabs";
 import FileNavigationSidebar from "./sidebar/FileNavigationSidebar";
+import { useTabsContext } from "../context/TabsContext";
 
 const Layout: React.FC = () => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const { tabs, activeTab } = useTabsContext();
 
   return (
     <div
@@ -63,7 +66,7 @@ const Layout: React.FC = () => {
 
       {/* Main Content */}
       <main className="bg-white p-4" style={{ gridArea: "mainContent" }}>
-        <DefaultPage />
+        {tabs[activeTab].filePath ? <NotePage /> : <DefaultPage />}
       </main>
 
       {/* Right Sidebar, width adjustable, content is scrollable */}

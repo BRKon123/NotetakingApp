@@ -14,6 +14,14 @@ export const deleteFileInFileSystem = async (
   return deletedFilePath;
 };
 
+export const loadFileInFileSystem = async (
+  filePath: string
+): Promise<string> => {
+  const ipcResponse = await window.electronAPI.loadFile(filePath);
+  console.log("response from loading: ", ipcResponse);
+  return ipcResponse.success ? ipcResponse.content : ipcResponse.error;
+};
+
 export const listFilesInFileSystem = async (
   directoryPath: string
 ): Promise<FileInfo[]> => {
