@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useTabsContext } from "../../context/TabsContext";
 import { loadFileInFileSystem } from "../../utils/fileSystemOperations";
+import Editor from "./editor/Editor";
 
 const MarkdownRenderer: React.FC = () => {
   const { tabs, activeTab } = useTabsContext();
