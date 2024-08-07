@@ -23,8 +23,8 @@ const MarkdownRenderer: React.FC = () => {
   }, [tabs[activeTab].filePath]);
 
   return (
-    <div className="markdown-body">
-      <ReactMarkdown>{content}</ReactMarkdown>
+    <div className="markdown-body h-full">
+      <Editor />
     </div>
   );
 };

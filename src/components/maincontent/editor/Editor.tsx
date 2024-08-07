@@ -1,102 +1,74 @@
-import React, { useEffect, useState } from "react";
-import { caretToEnd, uuid } from "./helpers";
-import EditorBlock from "./EditorBlock";
+// component that renders the markdown notes and allows them to be edited
+import React, { useEffect, useState, useRef } from "react";
 
-const initialBlock = { id: uuid(), html: "", tag: "p" };
+function Editor() {
+  const containerElement = useRef<HTMLDivElement>(null);
+  const currentBlock = useRef<HTMLDivElement>(null);
 
-const Editor = () => {
-  const [blocks, setBlocks] = useState([initialBlock]);
-  const updatePage = (updatedBlock) => {
-    const idx = blocks.map((block) => block.id).indexOf(updatedBlock.id);
-    const updatedBlocks = [...blocks];
-    updatedBlocks[idx] = {
-      ...updatedBlocks[idx],
-      tag: updatedBlock.tag,
-      html: updatedBlock.html,
-    };
-    setBlocks(updatedBlocks);
+  useEffect(() => {
+    addFirstEditableDiv();
+  }, []);
+
+  const setCaretAtStart = () => {
+    const div = currentBlock.current;
+    if (div) {
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.setStart(div, 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
+  //
+  const createEditableDiv = (): HTMLDivElement => {
+    const newDiv = document.createElement("div");
+    newDiv.className = "focus:outline-none";
+    newDiv.contentEditable = "true";
+    newDiv.addEventListener("keydown", handleOnKeyDown);
+    return newDiv;
   };
 
-  const deleteBlock = (currBlock) => {
-    const selection = window.getSelection();
-    const block = currBlock.ref;
-    const id = currBlock.id;
-
-    if (selection.isCollapsed) {
-      const selectionStart = selection.anchorOffset;
-
-      if (selectionStart > 0) {
-        const text = block.textContent;
-        const newText =
-          text.slice(0, selectionStart - 1) + text.slice(selectionStart);
-        block.textContent = newText;
-        caretToEnd(block);
-      }
-
-      if (block.textContent.trim() === "" || block.innerHTML === "") {
-        const idx = blocks.findIndex((b) => b.id === id);
-        if (idx > 0) {
-          const updatedBlocks = [...blocks];
-          updatedBlocks.splice(idx, 1);
-          setBlocks(updatedBlocks);
-        }
-      }
-    } else {
-      selection.deleteFromDocument();
+  const handleOnKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      appendNewEditableDivAfter();
     }
   };
 
-  const addBlock = (currBlock) => {
-    const newBlock = { id: uuid(), html: "", tag: "p" };
-    const idx = blocks.map((block) => block.id).indexOf(currBlock.id);
-    const updatedBlocks = [...blocks];
-    updatedBlocks.splice(idx + 1, 0, newBlock);
-    setBlocks(updatedBlocks);
+  const appendNewEditableDivAfter = () => {
+    if (currentBlock.current) {
+      const newDiv = createEditableDiv();
+      currentBlock.current.after(newDiv);
+      // Update the ref to the new div
+      currentBlock.current = newDiv;
+      //set caret to start of this div
+      setCaretAtStart();
+    }
   };
 
-  const reorderBlocks = (draggedBlockId, targetBlockId) => {
-    const draggedBlockIndex = blocks.findIndex(
-      (block) => block.id === draggedBlockId
-    );
-    const targetBlockIndex = blocks.findIndex(
-      (block) => block.id === targetBlockId
-    );
-
-    if (draggedBlockIndex === -1 || targetBlockIndex === -1) {
-      return;
+  const addFirstEditableDiv = () => {
+    if (containerElement.current) {
+      const newDiv = createEditableDiv();
+      containerElement.current.appendChild(newDiv);
+      // Update the ref to the new div
+      currentBlock.current = newDiv;
+      //set caret to start of this div
+      setCaretAtStart();
     }
+  };
 
-    const updatedBlocks = [...blocks];
-
-    const [draggedBlock] = updatedBlocks.splice(draggedBlockIndex, 1);
-
-    updatedBlocks.splice(targetBlockIndex, 0, draggedBlock);
-
-    setBlocks(updatedBlocks);
+  const duplicateAndAppendDiv = (): void => {
+    const clone = currentBlock.current.cloneNode(true) as HTMLDivElement;
+    currentBlock.current.appendChild(clone);
   };
 
   return (
-    <div className="editor">
-      {blocks.map((block, index) => {
-        return (
-          <EditorBlock
-            key={block.id}
-            id={block.id}
-            tag={block.tag}
-            html={block.html}
-            updatePage={updatePage}
-            addBlock={addBlock}
-            deleteBlock={deleteBlock}
-            isFirstBlock={index === 0}
-            isLastBlock={index === blocks.length - 1}
-            blocks={blocks}
-            setBlocks={setBlocks}
-            recorderBlocks={reorderBlocks}
-          />
-        );
-      })}
-    </div>
+    <div
+      ref={containerElement}
+      className="w-full h-full bg-transparent text-black focus:outline-none"
+    ></div>
   );
-};
+}
 
 export default Editor;
