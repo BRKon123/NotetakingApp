@@ -1,39 +1,38 @@
 // component that renders the markdown notes and allows them to be edited
 import React, { useEffect, useState, useRef } from "react";
+import EditableDivElement from "../../../models/EditableDivElement";
+import {
+  createEditableSpan,
+  setCaretAtStart,
+} from "../../../utils/editorOperations";
+
+//div element to represent idea blocks with span inside for the content
 
 function Editor() {
   const containerElement = useRef<HTMLDivElement>(null);
-  const currentBlock = useRef<HTMLDivElement>(null);
+  const currentBlock = useRef<EditableDivElement>(null);
 
   useEffect(() => {
     addFirstEditableDiv();
   }, []);
-
-  const setCaretAtStart = () => {
-    const div = currentBlock.current;
-    if (div) {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.setStart(div, 0);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  };
-  //
-  const createEditableDiv = (): HTMLDivElement => {
-    const newDiv = document.createElement("div");
-    newDiv.className = "focus:outline-none";
-    newDiv.contentEditable = "true";
-    newDiv.addEventListener("keydown", handleOnKeyDown);
-    return newDiv;
-  };
 
   const handleOnKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
       event.preventDefault();
       appendNewEditableDivAfter();
     }
+  };
+
+  const createEditableDiv = (): EditableDivElement => {
+    const newDiv = document.createElement("div") as EditableDivElement;
+    newDiv.className = "focus:outline-none";
+    newDiv.addEventListener("keydown", handleOnKeyDown);
+
+    const span = createEditableSpan();
+    newDiv.appendChild(span);
+    newDiv.span = span;
+
+    return newDiv;
   };
 
   const appendNewEditableDivAfter = () => {
@@ -43,7 +42,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart();
+      setCaretAtStart(newDiv.span);
     }
   };
 
@@ -54,7 +53,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart();
+      setCaretAtStart(newDiv.span);
     }
   };
 
