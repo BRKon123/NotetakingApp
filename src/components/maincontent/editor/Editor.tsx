@@ -16,13 +16,6 @@ function Editor() {
     addFirstEditableDiv();
   }, []);
 
-  const handleOnKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      appendNewEditableDivAfter();
-    }
-  };
-
   const createEditableDiv = (): EditableDivElement => {
     const newDiv = document.createElement("div") as EditableDivElement;
     newDiv.className = "focus:outline-none";
@@ -60,6 +53,13 @@ function Editor() {
   const duplicateAndAppendDiv = (): void => {
     const clone = currentBlock.current.cloneNode(true) as HTMLDivElement;
     currentBlock.current.appendChild(clone);
+  };
+
+  const handleOnKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      appendNewEditableDivAfter();
+    }
   };
 
   return (
