@@ -8,12 +8,12 @@ export const setCaretAtStart = (element?: HTMLElement) => {
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
+    element.focus();
   }
 };
 
 export const createEditableSpan = (): HTMLSpanElement => {
   const span = document.createElement("span");
-  span.contentEditable = "true";
   span.className = "focus:outline-none";
 
   return span;

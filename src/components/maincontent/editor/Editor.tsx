@@ -65,6 +65,7 @@ function Editor() {
   return (
     <div
       ref={containerElement}
+      contentEditable={true}
       className="w-full h-full bg-transparent text-black focus:outline-none"
     ></div>
   );
