@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import {
   EditableDivElement,
   EditableBulletElement,
+  isEditableDivElement,
 } from "../../../models/editorTypes";
 import {
   createEditableSpan,
@@ -14,6 +15,7 @@ import {
 function Editor() {
   const containerElement = useRef<HTMLDivElement>(null);
   const currentBlock = useRef<EditableDivElement>(null);
+  const [lastKeyPressed, setLastKeyPressed] = useState<string>(null);
 
   useEffect(() => {
     addFirstEditableDiv();
@@ -26,7 +28,7 @@ function Editor() {
 
     const span = createEditableSpan();
     newDiv.appendChild(span);
-    newDiv.span = span;
+    newDiv.content = span;
 
     return newDiv;
   };
@@ -55,7 +57,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart(newDiv.span);
+      setCaretAtStart(newDiv.content);
     }
   };
 
@@ -66,7 +68,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart(newDiv.span);
+      setCaretAtStart(newDiv.content);
     }
   };
 
@@ -76,10 +78,25 @@ function Editor() {
   };
 
   const handleOnKeyDown = (event: KeyboardEvent) => {
+    console.log("Key pressed: ", event.key);
     if (event.key === "Enter") {
       event.preventDefault();
       appendNewEditableDivAfter();
     }
+
+    if (
+      lastKeyPressed === "*" &&
+      event.key == "" &&
+      isEditableDivElement(currentBlock.current) && // can't convert is already a bullet
+      currentBlock.current.content.textContent === "*" // make sure that it is the start of the line
+    ) {
+      const newBullet = createEditableBullet();
+      currentBlock.current.replaceWith(newBullet);
+      currentBlock.current = newBullet;
+    }
+
+    //last thing to do is to set the last key pressed
+    setLastKeyPressed(event.key);
   };
 
   return (
