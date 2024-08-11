@@ -2,11 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   EditableDivElement,
-  isEditableDivElement,
-} from "../../../models/editorTypes";
-import {
-  setCaretAtStart,
-  getElementCleanTextContent,
   createEditableDiv,
   createEditableBullet,
   createEditableHeader,
@@ -31,7 +26,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart(newDiv.content);
+      newDiv.setCaretAtStart();
     }
   };
 
@@ -40,7 +35,7 @@ function Editor() {
       const newBullet = createEditableBullet();
       currentBlock.current.replaceWith(newBullet);
       currentBlock.current = newBullet;
-      setCaretAtStart(newBullet.content);
+      newBullet.setCaretAtStart();
     }
   };
 
@@ -49,7 +44,7 @@ function Editor() {
       const newHeader = createEditableHeader(headingString);
       currentBlock.current.replaceWith(newHeader);
       currentBlock.current = newHeader;
-      setCaretAtStart(newHeader.content);
+      newHeader.setCaretAtStart();
     }
   };
 
@@ -60,7 +55,7 @@ function Editor() {
       // Update the ref to the new div
       currentBlock.current = newDiv;
       //set caret to start of this div
-      setCaretAtStart(newDiv.content);
+      newDiv.setCaretAtStart();
     }
   };
 
@@ -70,14 +65,12 @@ function Editor() {
       appendNewEditableDivAfter();
     }
 
-    const currentBlockCleanContent = getElementCleanTextContent(
-      currentBlock.current.content
-    ); // text content without the leading zero width space
+    const currentBlockCleanContent = currentBlock.current.getCleanTextContent(); //text content without the leading zero width space
 
     if (
       lastKeyPressed === "*" &&
       event.key == " " &&
-      isEditableDivElement(currentBlock.current) && // can't convert is already a bullet
+      currentBlock.current instanceof EditableDivElement && // can't convert is already a bullet
       currentBlockCleanContent === "*" // make sure that it is the start of the line
     ) {
       console.log("Converting to bullet");
@@ -88,7 +81,7 @@ function Editor() {
     if (
       lastKeyPressed === "#" &&
       event.key === " " &&
-      isEditableDivElement(currentBlock.current) &&
+      currentBlock.current instanceof EditableDivElement &&
       isValidMarkdownHeading(currentBlockCleanContent) // check if it is a valid markdown heading
     ) {
       console.log("Converting to header");
