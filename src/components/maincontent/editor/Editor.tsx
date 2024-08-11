@@ -70,15 +70,15 @@ function Editor() {
       appendNewEditableDivAfter();
     }
 
-    const currentBlockContent = getElementCleanTextContent(
+    const currentBlockCleanContent = getElementCleanTextContent(
       currentBlock.current.content
-    );
+    ); // text content without the leading zero width space
 
     if (
       lastKeyPressed === "*" &&
       event.key == " " &&
       isEditableDivElement(currentBlock.current) && // can't convert is already a bullet
-      currentBlockContent === "*" // make sure that it is the start of the line
+      currentBlockCleanContent === "*" // make sure that it is the start of the line
     ) {
       console.log("Converting to bullet");
       event.preventDefault();
@@ -89,11 +89,11 @@ function Editor() {
       lastKeyPressed === "#" &&
       event.key === " " &&
       isEditableDivElement(currentBlock.current) &&
-      isValidMarkdownHeading(currentBlockContent) // check if it is a valid markdown heading
+      isValidMarkdownHeading(currentBlockCleanContent) // check if it is a valid markdown heading
     ) {
       console.log("Converting to header");
       event.preventDefault();
-      replaceWithEditableHeader(currentBlockContent);
+      replaceWithEditableHeader(currentBlockCleanContent);
     }
 
     //last thing to do is to set the last key pressed
