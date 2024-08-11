@@ -56,18 +56,22 @@ export const createEditableBullet = (
 };
 
 export const createEditableHeader = (
-  level: number,
+  headingString: string,
   textContent: string = null // the content of the header
 ): EditableHeaderElement => {
+  const headerLevel = headingString.split(" ")[0].length;
+  const tailwindTextSizeClasses = getHeaderTextSizeTailwindClasses(headerLevel);
+
   const newDiv = document.createElement("div") as EditableHeaderElement;
   newDiv.className = `focus:outline-none my-2`;
 
   const headerSpan = createEditableSpan(
-    "",
-    getHeaderTextSizeTailwindClasses(level)
-  );
+    headingString + " ",
+    tailwindTextSizeClasses
+  ); // hidden until selected or caret on it
 
-  const contentSpan = createEditableSpan(textContent);
+  const contentSpan = createEditableSpan(textContent, tailwindTextSizeClasses);
+
   newDiv.appendChild(headerSpan);
   newDiv.appendChild(contentSpan);
   newDiv.header = headerSpan;
@@ -101,3 +105,6 @@ export const getElementCleanTextContent = (element: HTMLElement): string => {
   }
   return element.textContent.replace(/\u200B/g, "");
 };
+
+export const isValidMarkdownHeading = (str: string): boolean =>
+  /^#{1,6}$/.test(str);

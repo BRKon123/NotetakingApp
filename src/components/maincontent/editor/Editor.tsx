@@ -1,18 +1,23 @@
 // component that renders the markdown notes and allows them to be edited
 import React, { useEffect, useState, useRef } from "react";
-import { isEditableDivElement } from "../../../models/editorTypes";
+import {
+  EditableDivElement,
+  isEditableDivElement,
+} from "../../../models/editorTypes";
 import {
   setCaretAtStart,
   getElementCleanTextContent,
   createEditableDiv,
   createEditableBullet,
+  createEditableHeader,
+  isValidMarkdownHeading,
 } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
 
 function Editor() {
   const containerElement = useRef<HTMLDivElement>(null);
-  const currentBlock = useRef<HTMLDivElement>(null);
+  const currentBlock = useRef<EditableDivElement>(null);
   const [lastKeyPressed, setLastKeyPressed] = useState<string>(null);
 
   useEffect(() => {
@@ -39,6 +44,15 @@ function Editor() {
     }
   };
 
+  const replaceWithEditableHeader = (headingString: string) => {
+    if (currentBlock.current) {
+      const newHeader = createEditableHeader(headingString);
+      currentBlock.current.replaceWith(newHeader);
+      currentBlock.current = newHeader;
+      setCaretAtStart(newHeader.content);
+    }
+  };
+
   const addFirstEditableDiv = () => {
     if (containerElement.current) {
       const newDiv = createEditableDiv();
@@ -56,15 +70,30 @@ function Editor() {
       appendNewEditableDivAfter();
     }
 
+    const currentBlockContent = getElementCleanTextContent(
+      currentBlock.current.content
+    );
+
     if (
       lastKeyPressed === "*" &&
       event.key == " " &&
       isEditableDivElement(currentBlock.current) && // can't convert is already a bullet
-      getElementCleanTextContent(currentBlock.current.content) === "*" // make sure that it is the start of the line
+      currentBlockContent === "*" // make sure that it is the start of the line
     ) {
       console.log("Converting to bullet");
       event.preventDefault();
       replaceWithEditableBullet();
+    }
+
+    if (
+      lastKeyPressed === "#" &&
+      event.key === " " &&
+      isEditableDivElement(currentBlock.current) &&
+      isValidMarkdownHeading(currentBlockContent) // check if it is a valid markdown heading
+    ) {
+      console.log("Converting to header");
+      event.preventDefault();
+      replaceWithEditableHeader(currentBlockContent);
     }
 
     //last thing to do is to set the last key pressed
