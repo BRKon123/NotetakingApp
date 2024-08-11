@@ -39,7 +39,8 @@ function Editor() {
     const newDiv = document.createElement("div") as EditableBulletElement;
     newDiv.className = "focus:outline-none flex items-start";
 
-    const bulletSpan = createEditableSpan("• ", "ml-4");
+    const bulletSpan = createEditableSpan("• ", "ml-4 mr-2");
+
     const contentSpan = createEditableSpan(textContent);
     newDiv.appendChild(bulletSpan);
     newDiv.appendChild(contentSpan);
@@ -57,6 +58,15 @@ function Editor() {
       currentBlock.current = newDiv;
       //set caret to start of this div
       setCaretAtStart(newDiv.content);
+    }
+  };
+
+  const replaceWithEditableBullet = () => {
+    if (currentBlock.current) {
+      const newBullet = createEditableBullet();
+      currentBlock.current.replaceWith(newBullet);
+      currentBlock.current = newBullet;
+      setCaretAtStart(newBullet.content);
     }
   };
 
@@ -84,9 +94,8 @@ function Editor() {
       getElementCleanTextContent(currentBlock.current.content) === "*" // make sure that it is the start of the line
     ) {
       console.log("Converting to bullet");
-      const newBullet = createEditableBullet();
-      currentBlock.current.replaceWith(newBullet);
-      currentBlock.current = newBullet;
+      event.preventDefault();
+      replaceWithEditableBullet();
     }
 
     //last thing to do is to set the last key pressed

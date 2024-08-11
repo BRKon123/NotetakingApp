@@ -17,7 +17,7 @@ export const createEditableSpan = (
 ): HTMLSpanElement => {
   const span = document.createElement("span");
   span.className =
-    "focus:outline-none" + (tailwindStyles ? tailwindStyles : "");
+    "focus:outline-none " + (tailwindStyles ? tailwindStyles : "");
   span.textContent = textContent ? textContent : "\u200B"; // Add a zero-width space as the initial content if string empty
 
   return span;
