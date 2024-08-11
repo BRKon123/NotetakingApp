@@ -1,6 +1,7 @@
 import {
   EditableDivElement,
   EditableBulletElement,
+  EditableHeaderElement,
 } from "../models/editorTypes";
 
 export const setCaretAtStart = (element?: HTMLElement) => {
@@ -54,9 +55,49 @@ export const createEditableBullet = (
   return newDiv;
 };
 
-export function getElementCleanTextContent(element: HTMLElement): string {
+export const createEditableHeader = (
+  level: number,
+  textContent: string = null // the content of the header
+): EditableHeaderElement => {
+  const newDiv = document.createElement("div") as EditableHeaderElement;
+  newDiv.className = `focus:outline-none my-2`;
+
+  const headerSpan = createEditableSpan(
+    "",
+    getHeaderTextSizeTailwindClasses(level)
+  );
+
+  const contentSpan = createEditableSpan(textContent);
+  newDiv.appendChild(headerSpan);
+  newDiv.appendChild(contentSpan);
+  newDiv.header = headerSpan;
+  newDiv.content = contentSpan;
+
+  return newDiv;
+};
+
+const getHeaderTextSizeTailwindClasses = (level: number): string => {
+  switch (level) {
+    case 1:
+      return "text-3xl font-bold";
+    case 2:
+      return "text-2xl font-bold";
+    case 3:
+      return "text-xl font-bold";
+    case 4:
+      return "text-lg font-bold";
+    case 5:
+      return "text-base font-bold";
+    case 6:
+      return "text-sm font-bold";
+    default:
+      return "";
+  }
+};
+
+export const getElementCleanTextContent = (element: HTMLElement): string => {
   if (!element || !element.textContent) {
     return "";
   }
   return element.textContent.replace(/\u200B/g, "");
-}
+};

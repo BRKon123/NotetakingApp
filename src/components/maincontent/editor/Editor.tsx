@@ -1,12 +1,7 @@
 // component that renders the markdown notes and allows them to be edited
 import React, { useEffect, useState, useRef } from "react";
+import { isEditableDivElement } from "../../../models/editorTypes";
 import {
-  EditableDivElement,
-  EditableBulletElement,
-  isEditableDivElement,
-} from "../../../models/editorTypes";
-import {
-  createEditableSpan,
   setCaretAtStart,
   getElementCleanTextContent,
   createEditableDiv,
@@ -17,7 +12,7 @@ import {
 
 function Editor() {
   const containerElement = useRef<HTMLDivElement>(null);
-  const currentBlock = useRef<EditableDivElement>(null);
+  const currentBlock = useRef<HTMLDivElement>(null);
   const [lastKeyPressed, setLastKeyPressed] = useState<string>(null);
 
   useEffect(() => {
@@ -87,11 +82,3 @@ function Editor() {
 }
 
 export default Editor;
-
-// <div className="flex items-start">
-//     <span className="ml-2 bullet">•</span>
-//     <span className="text-gray-800" style="margin-left: 10px;">
-//         Quantum laws trump Newtonian laws. This field is what governs the
-//         agency of the particle and organizes light into form.
-//     </span>
-// </div>
