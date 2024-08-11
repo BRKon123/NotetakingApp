@@ -5,8 +5,8 @@ import {
   createEditableDiv,
   createEditableBullet,
   createEditableHeader,
-  isValidMarkdownHeading,
-} from "../../../utils/editorOperations";
+} from "../../../utils/editorClasses";
+import { isValidMarkdownHeading } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
 
