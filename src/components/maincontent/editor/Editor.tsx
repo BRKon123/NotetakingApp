@@ -8,6 +8,7 @@ import {
 import {
   createEditableSpan,
   setCaretAtStart,
+  getElementCleanTextContent,
 } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
@@ -24,7 +25,6 @@ function Editor() {
   const createEditableDiv = (): EditableDivElement => {
     const newDiv = document.createElement("div") as EditableDivElement;
     newDiv.className = "focus:outline-none";
-    newDiv.addEventListener("keydown", handleOnKeyDown);
 
     const span = createEditableSpan();
     newDiv.appendChild(span);
@@ -38,7 +38,6 @@ function Editor() {
   ): EditableBulletElement => {
     const newDiv = document.createElement("div") as EditableBulletElement;
     newDiv.className = "focus:outline-none flex items-start";
-    newDiv.addEventListener("keydown", handleOnKeyDown);
 
     const bulletSpan = createEditableSpan("• ", "ml-4");
     const contentSpan = createEditableSpan(textContent);
@@ -72,13 +71,7 @@ function Editor() {
     }
   };
 
-  const duplicateAndAppendDiv = (): void => {
-    const clone = currentBlock.current.cloneNode(true) as HTMLDivElement;
-    currentBlock.current.appendChild(clone);
-  };
-
-  const handleOnKeyDown = (event: KeyboardEvent) => {
-    console.log("Key pressed: ", event.key);
+  const handleOnKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       event.preventDefault();
       appendNewEditableDivAfter();
@@ -86,10 +79,11 @@ function Editor() {
 
     if (
       lastKeyPressed === "*" &&
-      event.key == "" &&
+      event.key == " " &&
       isEditableDivElement(currentBlock.current) && // can't convert is already a bullet
-      currentBlock.current.content.textContent === "*" // make sure that it is the start of the line
+      getElementCleanTextContent(currentBlock.current.content) === "*" // make sure that it is the start of the line
     ) {
+      console.log("Converting to bullet");
       const newBullet = createEditableBullet();
       currentBlock.current.replaceWith(newBullet);
       currentBlock.current = newBullet;
@@ -103,6 +97,7 @@ function Editor() {
     <div
       ref={containerElement}
       contentEditable={true}
+      onKeyDown={handleOnKeyDown}
       className="w-full h-full bg-transparent text-black focus:outline-none"
     ></div>
   );
