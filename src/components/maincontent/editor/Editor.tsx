@@ -6,10 +6,7 @@ import {
   createEditableBullet,
   createEditableHeader,
 } from "../../../utils/editorClasses";
-import {
-  isValidMarkdownHeading,
-  getCleanTextContent,
-} from "../../../utils/editorOperations";
+import { isValidMarkdownHeading } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
 
@@ -63,14 +60,16 @@ function Editor() {
   };
 
   const handleOnKeyDown = (event: React.KeyboardEvent) => {
+    const selection = window.getSelection();
+    const currentNode = selection?.anchorNode; // could use currentBlock, but this seems to manage this for us
+
     if (event.key === "Enter") {
       event.preventDefault();
       appendNewEditableDivAfter();
     }
 
-    const currentBlockCleanContent = getCleanTextContent(
-      currentBlock.current.content
-    ); //text content without the leading zero width space
+    const currentBlockCleanContent =
+      currentBlock.current.content.getCleanTextContent(); //text content without the leading zero width space
 
     if (
       lastKeyPressed === "*" &&

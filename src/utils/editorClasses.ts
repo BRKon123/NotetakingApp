@@ -1,11 +1,30 @@
-import {
-  createEditableSpan,
-  getHeaderTextSizeTailwindClasses,
-  getCleanTextContent,
-} from "./editorOperations";
+import { getHeaderTextSizeTailwindClasses } from "./editorOperations";
+
+export class EditableSpanElement extends HTMLSpanElement {
+  constructor() {
+    super();
+  }
+
+  // Initialize method to set up the element
+  initialize(textContent: string = null, tailwindStyles: string = null): this {
+    this.className =
+      "focus:outline-none " + (tailwindStyles ? tailwindStyles : "");
+    this.textContent = "\u200B" + (textContent ? textContent : ""); // add zero-width space regardless of whether there is content
+    return this;
+  }
+
+  // Return the text content excluding zero-width spaces
+  getCleanTextContent(): string {
+    return this.textContent.replace(/\u200B/g, "");
+  }
+}
+
+export class EditableHeaderSpanElement extends EditableSpanElement {}
+
+export class EditableBulletSpanElement extends EditableSpanElement {}
 
 export class EditableDivElement extends HTMLDivElement {
-  content: HTMLSpanElement;
+  content: EditableSpanElement;
 
   constructor() {
     super();
@@ -30,7 +49,7 @@ export class EditableDivElement extends HTMLDivElement {
   ): this {
     this.className =
       "focus:outline-none " + (divStyleString ? divStyleString : "");
-    this.content = createEditableSpan(textContent, contentStyleString);
+    this.content = createEditableSpanElement(textContent, contentStyleString);
     this.#setChildren([this.content]); // want to ensure that there is only one child
     return this;
   }
@@ -61,7 +80,7 @@ export class EditableDivElement extends HTMLDivElement {
 }
 
 export class EditableBulletElement extends EditableDivElement {
-  bullet: HTMLSpanElement;
+  bullet: EditableBulletSpanElement;
 
   constructor() {
     super();
@@ -69,7 +88,7 @@ export class EditableBulletElement extends EditableDivElement {
 
   initialize(textContent: string = null): this {
     super.initialize("flex items-start", textContent);
-    this.bullet = createEditableSpan("• ", "ml-4 mr-2");
+    this.bullet = createEditableBulletSpanElement("• ", "ml-4 mr-2");
     this.prepend(this.bullet);
     return this;
   }
@@ -80,7 +99,7 @@ export class EditableBulletElement extends EditableDivElement {
     const newDivContentString =
       (cursorInContentPart
         ? this.bullet.textContent.trim() //if curson in content part then remove space after header
-        : getCleanTextContent(this.bullet)) + this.bullet.textContent;
+        : this.bullet.getCleanTextContent()) + this.bullet.textContent;
     const newDiv = createEditableDiv(newDivContentString);
     this.replaceWith(newDiv);
     return newDiv;
@@ -88,7 +107,7 @@ export class EditableBulletElement extends EditableDivElement {
 }
 
 export class EditableHeaderElement extends EditableDivElement {
-  header: HTMLSpanElement;
+  header: EditableHeaderSpanElement;
 
   constructor() {
     super();
@@ -100,7 +119,7 @@ export class EditableHeaderElement extends EditableDivElement {
       getHeaderTextSizeTailwindClasses(headerLevel);
     super.initialize("my-2", textContent, tailwindTextSizeClasses);
 
-    this.header = createEditableSpan(
+    this.header = createEditableHeaderSpanElement(
       headingString + " ",
       tailwindTextSizeClasses
     );
@@ -115,7 +134,7 @@ export class EditableHeaderElement extends EditableDivElement {
     const newDivContentString =
       (cursorInContentPart
         ? this.header.textContent.trim() //if curson in content part then remove space after header
-        : getCleanTextContent(this.header)) + this.header.textContent; // if cursor not in content part just remove the zero-width space
+        : this.header.getCleanTextContent()) + this.header.textContent; // if cursor not in content part just remove the zero-width space
     const newDiv = createEditableDiv(newDivContentString);
     this.replaceWith(newDiv);
     return newDiv;
@@ -123,6 +142,15 @@ export class EditableHeaderElement extends EditableDivElement {
 }
 
 // Register the custom elements
+customElements.define("editable-span", EditableSpanElement, {
+  extends: "span",
+});
+customElements.define("editable-header-span", EditableHeaderSpanElement, {
+  extends: "span",
+});
+customElements.define("editable-bullet-span", EditableBulletSpanElement, {
+  extends: "span",
+});
 customElements.define("editable-div", EditableDivElement, { extends: "div" });
 customElements.define("editable-bullet", EditableBulletElement, {
   extends: "div",
@@ -132,6 +160,39 @@ customElements.define("editable-header", EditableHeaderElement, {
 });
 
 // Factory functions for creating instances of the custom elements using the initialise method after registration in dom
+export const createEditableSpanElement = (
+  textContent: string = null,
+  tailwindStyles: string = null
+): EditableSpanElement => {
+  return (
+    document.createElement("span", {
+      is: "editable-span",
+    }) as EditableSpanElement
+  ).initialize(textContent, tailwindStyles);
+};
+
+export const createEditableHeaderSpanElement = (
+  textContent: string = null,
+  tailwindStyles: string = null
+): EditableHeaderSpanElement => {
+  return (
+    document.createElement("span", {
+      is: "editable-header-span",
+    }) as EditableHeaderSpanElement
+  ).initialize(textContent, tailwindStyles);
+};
+
+export const createEditableBulletSpanElement = (
+  textContent: string = null,
+  tailwindStyles: string = null
+): EditableBulletSpanElement => {
+  return (
+    document.createElement("span", {
+      is: "editable-bullet-span",
+    }) as EditableBulletSpanElement
+  ).initialize(textContent, tailwindStyles);
+};
+
 export const createEditableDiv = (
   textContent: string = null,
   divStyleString: string = null,
