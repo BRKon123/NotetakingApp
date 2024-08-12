@@ -1,6 +1,7 @@
 import {
   createEditableSpan,
   getHeaderTextSizeTailwindClasses,
+  getCleanTextContent,
 } from "./editorOperations";
 
 export class EditableDivElement extends HTMLDivElement {
@@ -30,12 +31,14 @@ export class EditableDivElement extends HTMLDivElement {
     this.className =
       "focus:outline-none " + (divStyleString ? divStyleString : "");
     this.content = createEditableSpan(textContent, contentStyleString);
-    this.#setChildren([this.content]);
+    this.#setChildren([this.content]); // want to ensure that there is only one child
     return this;
   }
 
-  convertToEditableDiv() {
+  // basically just resets the div element to its initial state
+  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
     this.initialize();
+    return this;
   }
 
   setCaretAtStart() {
@@ -49,12 +52,12 @@ export class EditableDivElement extends HTMLDivElement {
     }
   }
 
-  getCleanTextContent(): string {
-    if (!this.content || !this.content.textContent) {
-      return "";
-    }
-    return this.content.textContent.replace(/\u200B/g, "");
+  // return all the text of the element
+  getText(): string {
+    return this.content.textContent;
   }
+
+  // return the text of the element excluding any zero-width spaces
 }
 
 export class EditableBulletElement extends EditableDivElement {
@@ -69,6 +72,18 @@ export class EditableBulletElement extends EditableDivElement {
     this.bullet = createEditableSpan("• ", "ml-4 mr-2");
     this.prepend(this.bullet);
     return this;
+  }
+
+  // for use when we backspace within the bullet part or at zero width space of content
+  // function not triggered when cursor is at zero width space of bullet
+  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
+    const newDivContentString =
+      (cursorInContentPart
+        ? this.bullet.textContent.trim() //if curson in content part then remove space after header
+        : getCleanTextContent(this.bullet)) + this.bullet.textContent;
+    const newDiv = createEditableDiv(newDivContentString);
+    this.replaceWith(newDiv);
+    return newDiv;
   }
 }
 
@@ -92,6 +107,18 @@ export class EditableHeaderElement extends EditableDivElement {
 
     this.prepend(this.header);
     return this;
+  }
+
+  // for use when we backspace within the header part or at zero width space of content
+  // function not triggered when cursor is at zero width space of header
+  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
+    const newDivContentString =
+      (cursorInContentPart
+        ? this.header.textContent.trim() //if curson in content part then remove space after header
+        : getCleanTextContent(this.header)) + this.header.textContent; // if cursor not in content part just remove the zero-width space
+    const newDiv = createEditableDiv(newDivContentString);
+    this.replaceWith(newDiv);
+    return newDiv;
   }
 }
 

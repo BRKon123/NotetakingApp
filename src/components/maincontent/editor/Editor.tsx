@@ -6,7 +6,10 @@ import {
   createEditableBullet,
   createEditableHeader,
 } from "../../../utils/editorClasses";
-import { isValidMarkdownHeading } from "../../../utils/editorOperations";
+import {
+  isValidMarkdownHeading,
+  getCleanTextContent,
+} from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
 
@@ -65,7 +68,9 @@ function Editor() {
       appendNewEditableDivAfter();
     }
 
-    const currentBlockCleanContent = currentBlock.current.getCleanTextContent(); //text content without the leading zero width space
+    const currentBlockCleanContent = getCleanTextContent(
+      currentBlock.current.content
+    ); //text content without the leading zero width space
 
     if (
       lastKeyPressed === "*" &&

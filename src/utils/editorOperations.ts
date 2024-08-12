@@ -32,3 +32,10 @@ export const getHeaderTextSizeTailwindClasses = (level: number): string => {
 
 export const isValidMarkdownHeading = (str: string): boolean =>
   /^#{1,6}$/.test(str);
+
+export const getCleanTextContent = (span: HTMLSpanElement): string => {
+  if (!span || !span.textContent) {
+    return "";
+  }
+  return span.textContent.replace(/\u200B/g, "");
+};
