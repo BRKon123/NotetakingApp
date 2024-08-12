@@ -10,6 +10,17 @@ export class EditableDivElement extends HTMLDivElement {
     super();
   }
 
+  // Method to set the children of the element
+  // use # to indicate that this is a private function
+  #setChildren(nodes: Node[]): void {
+    // Remove all existing children
+    while (this.firstChild) {
+      this.removeChild(this.firstChild);
+    }
+    // Append the new children
+    nodes.forEach((node) => this.appendChild(node));
+  }
+
   // Initialize method to set up the element
   initialize(
     divStyleString: string = null,
@@ -19,15 +30,19 @@ export class EditableDivElement extends HTMLDivElement {
     this.className =
       "focus:outline-none " + (divStyleString ? divStyleString : "");
     this.content = createEditableSpan(textContent, contentStyleString);
-    this.appendChild(this.content);
+    this.#setChildren([this.content]);
     return this;
+  }
+
+  convertToEditableDiv() {
+    this.initialize();
   }
 
   setCaretAtStart() {
     if (this.content) {
       const range = document.createRange();
       const selection = window.getSelection();
-      range.setStart(this.content, 0); // Set the caret at the start of the content span
+      range.setStart(this.content, this.content.childNodes.length); // Set the caret at the start of the content span
       range.collapse(true);
       selection.removeAllRanges();
       selection.addRange(range);
@@ -89,7 +104,7 @@ customElements.define("editable-header", EditableHeaderElement, {
   extends: "div",
 });
 
-// Factory functions for creating instances of the custom elements
+// Factory functions for creating instances of the custom elements using the initialise method after registration in dom
 export const createEditableDiv = (
   textContent: string = null,
   divStyleString: string = null,
