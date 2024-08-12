@@ -2,9 +2,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   EditableDivElement,
-  createEditableDiv,
+  createEditableBlock,
   createEditableBullet,
   createEditableHeader,
+  EditableSpanElement,
 } from "../../../utils/editorClasses";
 import { isValidMarkdownHeading } from "../../../utils/editorOperations";
 
@@ -21,7 +22,7 @@ function Editor() {
 
   const appendNewEditableDivAfter = () => {
     if (currentBlock.current) {
-      const newDiv = createEditableDiv();
+      const newDiv = createEditableBlock();
       currentBlock.current.after(newDiv);
       // Update the ref to the new div
       currentBlock.current = newDiv;
@@ -50,7 +51,7 @@ function Editor() {
 
   const addFirstEditableDiv = () => {
     if (containerElement.current) {
-      const newDiv = createEditableDiv();
+      const newDiv = createEditableBlock();
       containerElement.current.appendChild(newDiv);
       // Update the ref to the new div
       currentBlock.current = newDiv;
@@ -62,6 +63,13 @@ function Editor() {
   const handleOnKeyDown = (event: React.KeyboardEvent) => {
     const selection = window.getSelection();
     const currentNode = selection?.anchorNode; // could use currentBlock, but this seems to manage this for us
+
+    console.log(
+      "node current: ",
+      currentNode,
+      "current node type: ",
+      currentNode instanceof EditableSpanElement
+    );
 
     if (event.key === "Enter") {
       event.preventDefault();

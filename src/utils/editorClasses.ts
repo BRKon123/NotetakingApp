@@ -19,12 +19,14 @@ export class EditableSpanElement extends HTMLSpanElement {
   }
 }
 
+export class EditableContentSpanElement extends EditableSpanElement {}
+
 export class EditableHeaderSpanElement extends EditableSpanElement {}
 
 export class EditableBulletSpanElement extends EditableSpanElement {}
 
 export class EditableDivElement extends HTMLDivElement {
-  content: EditableSpanElement;
+  content: EditableContentSpanElement;
 
   constructor() {
     super();
@@ -49,7 +51,10 @@ export class EditableDivElement extends HTMLDivElement {
   ): this {
     this.className =
       "focus:outline-none " + (divStyleString ? divStyleString : "");
-    this.content = createEditableSpanElement(textContent, contentStyleString);
+    this.content = createEditableContentSpanElement(
+      textContent,
+      contentStyleString
+    );
     this.#setChildren([this.content]); // want to ensure that there is only one child
     return this;
   }
@@ -75,9 +80,10 @@ export class EditableDivElement extends HTMLDivElement {
   getText(): string {
     return this.content.textContent;
   }
-
   // return the text of the element excluding any zero-width spaces
 }
+
+export class EditableBlockElement extends EditableDivElement {}
 
 export class EditableBulletElement extends EditableDivElement {
   bullet: EditableBulletSpanElement;
@@ -100,7 +106,7 @@ export class EditableBulletElement extends EditableDivElement {
       (cursorInContentPart
         ? this.bullet.textContent.trim() //if curson in content part then remove space after header
         : this.bullet.getCleanTextContent()) + this.bullet.textContent;
-    const newDiv = createEditableDiv(newDivContentString);
+    const newDiv = createEditableBlock(newDivContentString);
     this.replaceWith(newDiv);
     return newDiv;
   }
@@ -135,7 +141,7 @@ export class EditableHeaderElement extends EditableDivElement {
       (cursorInContentPart
         ? this.header.textContent.trim() //if curson in content part then remove space after header
         : this.header.getCleanTextContent()) + this.header.textContent; // if cursor not in content part just remove the zero-width space
-    const newDiv = createEditableDiv(newDivContentString);
+    const newDiv = createEditableBlock(newDivContentString);
     this.replaceWith(newDiv);
     return newDiv;
   }
@@ -145,6 +151,9 @@ export class EditableHeaderElement extends EditableDivElement {
 customElements.define("editable-span", EditableSpanElement, {
   extends: "span",
 });
+customElements.define("editable-content-span", EditableContentSpanElement, {
+  extends: "span",
+});
 customElements.define("editable-header-span", EditableHeaderSpanElement, {
   extends: "span",
 });
@@ -152,6 +161,9 @@ customElements.define("editable-bullet-span", EditableBulletSpanElement, {
   extends: "span",
 });
 customElements.define("editable-div", EditableDivElement, { extends: "div" });
+customElements.define("editable-block", EditableBlockElement, {
+  extends: "div",
+});
 customElements.define("editable-bullet", EditableBulletElement, {
   extends: "div",
 });
@@ -160,14 +172,14 @@ customElements.define("editable-header", EditableHeaderElement, {
 });
 
 // Factory functions for creating instances of the custom elements using the initialise method after registration in dom
-export const createEditableSpanElement = (
+export const createEditableContentSpanElement = (
   textContent: string = null,
   tailwindStyles: string = null
-): EditableSpanElement => {
+): EditableContentSpanElement => {
   return (
     document.createElement("span", {
-      is: "editable-span",
-    }) as EditableSpanElement
+      is: "editable-content-span",
+    }) as EditableContentSpanElement
   ).initialize(textContent, tailwindStyles);
 };
 
@@ -193,13 +205,15 @@ export const createEditableBulletSpanElement = (
   ).initialize(textContent, tailwindStyles);
 };
 
-export const createEditableDiv = (
+export const createEditableBlock = (
   textContent: string = null,
   divStyleString: string = null,
   contentStyleString: string = null
-): EditableDivElement => {
+): EditableBlockElement => {
   return (
-    document.createElement("div", { is: "editable-div" }) as EditableDivElement
+    document.createElement("div", {
+      is: "editable-block",
+    }) as EditableBlockElement
   ).initialize(textContent, divStyleString, contentStyleString);
 };
 
