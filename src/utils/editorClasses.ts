@@ -65,6 +65,12 @@ export class EditableDivElement extends HTMLDivElement {
     return this;
   }
 
+  appendNewEditableDivAfter(): void {
+    const newDiv = createEditableBlock();
+    this.after(newDiv);
+    newDiv.setCaretAtStart();
+  }
+
   setCaretAtStart() {
     if (this.content) {
       const range = document.createRange();
@@ -83,7 +89,19 @@ export class EditableDivElement extends HTMLDivElement {
   // return the text of the element excluding any zero-width spaces
 }
 
-export class EditableBlockElement extends EditableDivElement {}
+export class EditableBlockElement extends EditableDivElement {
+  replaceWithEditableBullet(): void {
+    const newBullet = createEditableBullet();
+    this.replaceWith(newBullet);
+    newBullet.setCaretAtStart();
+  }
+
+  replaceWithEditableHeader(headingString: string): void {
+    const newHeader = createEditableHeader(headingString);
+    this.replaceWith(newHeader);
+    newHeader.setCaretAtStart();
+  }
+}
 
 export class EditableBulletElement extends EditableDivElement {
   bullet: EditableBulletSpanElement;

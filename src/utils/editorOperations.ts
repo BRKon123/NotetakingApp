@@ -35,31 +35,3 @@ export const getCurrentNode = () => {
     ? currentNode
     : currentNode.parentElement;
 };
-
-// functions for adding new blocks in the editor
-export const appendNewEditableDivAfter = (currentBlock: EditableDivElement) => {
-  if (currentBlock) {
-    const newDiv = createEditableBlock();
-    currentBlock.after(newDiv);
-    newDiv.setCaretAtStart();
-  }
-};
-
-export const replaceWithEditableBullet = (currentBlock: EditableDivElement) => {
-  if (currentBlock) {
-    const newBullet = createEditableBullet();
-    currentBlock.replaceWith(newBullet);
-    newBullet.setCaretAtStart();
-  }
-};
-
-export const replaceWithEditableHeader = (
-  headingString: string,
-  currentBlock: EditableDivElement
-) => {
-  if (currentBlock) {
-    const newHeader = createEditableHeader(headingString);
-    currentBlock.replaceWith(newHeader);
-    newHeader.setCaretAtStart();
-  }
-};

@@ -8,9 +8,6 @@ import {
 import {
   isValidMarkdownHeading,
   getCurrentNode,
-  appendNewEditableDivAfter,
-  replaceWithEditableBullet,
-  replaceWithEditableHeader,
 } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
@@ -36,7 +33,7 @@ function Editor() {
 
     if (event.key === "Enter") {
       event.preventDefault();
-      appendNewEditableDivAfter(currentDivNode);
+      currentDivNode.appendNewEditableDivAfter();
     }
 
     const currentBlockCleanContent =
@@ -50,7 +47,7 @@ function Editor() {
     ) {
       console.log("Converting to bullet");
       event.preventDefault();
-      replaceWithEditableBullet(currentDivNode);
+      currentDivNode.replaceWithEditableBullet();
     }
 
     if (
@@ -61,7 +58,7 @@ function Editor() {
     ) {
       console.log("Converting to header");
       event.preventDefault();
-      replaceWithEditableHeader(currentBlockCleanContent, currentDivNode);
+      currentDivNode.replaceWithEditableHeader(currentBlockCleanContent);
     }
 
     //last thing to do is to set the last key pressed
