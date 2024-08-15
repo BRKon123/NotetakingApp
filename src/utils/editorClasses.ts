@@ -13,9 +13,22 @@ export class EditableSpanElement extends HTMLSpanElement {
     return this;
   }
 
+  setCaretAtStart() {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.setStart(this.firstChild, this.textContent.length); // Set the caret at the start of the content actual text node
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   // Return the text content excluding zero-width spaces
   getCleanTextContent(): string {
     return this.textContent.replace(/\u200B/g, "");
+  }
+
+  removeWhitespaceBothSides(): string {
+    return this.textContent.replace(/\u200B/g, "").trim();
   }
 }
 
@@ -25,6 +38,16 @@ export class EditableHeaderSpanElement extends EditableSpanElement {}
 
 export class EditableBulletSpanElement extends EditableSpanElement {}
 
+/*
+-
+-
+-
+-
+-
+-
+-
+Classes to Define div elements now, eg headers, bullets and normal content blocks
+*/
 export class EditableDivElement extends HTMLDivElement {
   content: EditableContentSpanElement;
 
@@ -45,8 +68,8 @@ export class EditableDivElement extends HTMLDivElement {
 
   // Initialize method to set up the element
   initialize(
-    divStyleString: string = null,
     textContent: string = null,
+    divStyleString: string = null,
     contentStyleString: string = null
   ): this {
     this.className =
@@ -60,7 +83,7 @@ export class EditableDivElement extends HTMLDivElement {
   }
 
   // basically just resets the div element to its initial state
-  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
+  convertToEditableBlock(cursorInContentPart: boolean): EditableDivElement {
     this.initialize();
     return this;
   }
@@ -73,20 +96,14 @@ export class EditableDivElement extends HTMLDivElement {
 
   setCaretAtStart() {
     if (this.content) {
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.setStart(this.content, this.content.childNodes.length); // Set the caret at the start of the content span
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      this.content.setCaretAtStart();
     }
   }
 
-  // return all the text of the element
-  getText(): string {
-    return this.content.textContent;
-  }
   // return the text of the element excluding any zero-width spaces
+  getCleanTextContent(): string {
+    return this.content.getCleanTextContent();
+  }
 }
 
 export class EditableBlockElement extends EditableDivElement {
@@ -111,7 +128,7 @@ export class EditableBulletElement extends EditableDivElement {
   }
 
   initialize(textContent: string = null): this {
-    super.initialize("flex items-start", textContent);
+    super.initialize(textContent, "flex items-start");
     this.bullet = createEditableBulletSpanElement("• ", "ml-4 mr-2");
     this.prepend(this.bullet);
     return this;
@@ -119,14 +136,24 @@ export class EditableBulletElement extends EditableDivElement {
 
   // for use when we backspace within the bullet part or at zero width space of content
   // function not triggered when cursor is at zero width space of bullet
-  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
-    const newDivContentString =
-      (cursorInContentPart
-        ? this.bullet.textContent.trim() //if curson in content part then remove space after header
-        : this.bullet.getCleanTextContent()) + this.bullet.textContent;
-    const newDiv = createEditableBlock(newDivContentString);
+  override convertToEditableBlock(
+    cursorInContentPart: boolean
+  ): EditableDivElement {
+    const newDivContentString = cursorInContentPart
+      ? this.bullet.removeWhitespaceBothSides() +
+        this.content.getCleanTextContent() //if curson in content part then remove space after header
+      : this.getCleanTextContent();
+    const newDiv = createEditableBlock(newDivContentString); // bullet doesn't work here, asterix only
     this.replaceWith(newDiv);
+    newDiv.setCaretAtStart();
     return newDiv;
+  }
+
+  // return the text of the element excluding any zero-width spaces
+  getCleanTextContent(): string {
+    return (
+      this.bullet.getCleanTextContent() + this.content.getCleanTextContent()
+    );
   }
 }
 
@@ -141,7 +168,7 @@ export class EditableHeaderElement extends EditableDivElement {
     const headerLevel = headingString.split(" ")[0].length;
     const tailwindTextSizeClasses =
       getHeaderTextSizeTailwindClasses(headerLevel);
-    super.initialize("my-2", textContent, tailwindTextSizeClasses);
+    super.initialize(textContent, "my-2", tailwindTextSizeClasses);
 
     this.header = createEditableHeaderSpanElement(
       headingString + " ",
@@ -154,14 +181,24 @@ export class EditableHeaderElement extends EditableDivElement {
 
   // for use when we backspace within the header part or at zero width space of content
   // function not triggered when cursor is at zero width space of header
-  convertToEditableDiv(cursorInContentPart: boolean): EditableDivElement {
-    const newDivContentString =
-      (cursorInContentPart
-        ? this.header.textContent.trim() //if curson in content part then remove space after header
-        : this.header.getCleanTextContent()) + this.header.textContent; // if cursor not in content part just remove the zero-width space
+  override convertToEditableBlock(
+    cursorInContentPart: boolean
+  ): EditableDivElement {
+    const newDivContentString = cursorInContentPart
+      ? this.header.removeWhitespaceBothSides() +
+        this.content.getCleanTextContent() //if curson in content part then remove space after header
+      : this.getCleanTextContent();
     const newDiv = createEditableBlock(newDivContentString);
     this.replaceWith(newDiv);
+    newDiv.setCaretAtStart();
     return newDiv;
+  }
+
+  // return the text of the element excluding any zero-width spaces
+  getCleanTextContent(): string {
+    return (
+      this.header.getCleanTextContent() + this.content.getCleanTextContent()
+    );
   }
 }
 
