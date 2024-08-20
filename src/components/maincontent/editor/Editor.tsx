@@ -5,6 +5,8 @@ import {
   createEditableBlock,
   EditableBlockElement,
   EditableSpanElement,
+  EditableContentSpanElement,
+  KeyHandler,
   EditableBulletSpanElement,
   EditableHeaderSpanElement,
 } from "../../../utils/editorClasses";
@@ -12,6 +14,8 @@ import {
   isValidMarkdownHeading,
   getCurrentNode,
   getCurrentNodeInfo,
+  isInitialSpanElement,
+  isFinalSpanElement,
 } from "../../../utils/editorOperations";
 
 //div element to represent idea blocks with span inside for the content
@@ -28,77 +32,158 @@ function Editor() {
     if (containerElement.current) {
       const newDiv = createEditableBlock();
       containerElement.current.appendChild(newDiv);
-      newDiv.setCaretAtStart();
+      newDiv.setCaretAtEnd();
     }
   };
+
   const handleOnKeyDown = (event: React.KeyboardEvent) => {
     const { textBeforeCaret, textAfterCaret, currentSpanNode } =
-      getCurrentNodeInfo(); // could use currentBlock, but this seems to manage this for us
+      getCurrentNodeInfo();
     const currentDivNode = currentSpanNode.parentNode as EditableDivElement;
+    const currentBlockCleanContent = currentSpanNode.getCleanTextContent();
 
-    const currentBlockCleanContent = currentSpanNode.getCleanTextContent(); //text content without the leading zero width space
-    console.log("current div node:", currentDivNode);
-    console.log(
-      "current key pressed:",
-      event.key,
-      "textBeforeCaret:",
-      textBeforeCaret,
-      "textAfterCaret:",
-      textAfterCaret
-    );
+    const keyHandlers: { [key: string]: KeyHandler } = {
+      Enter: handleEnterKey,
+      Backspace: handleBackspaceKey,
+      ArrowLeft: handleLeftArrowKey,
+      ArrowRight: handleRightArrowKey,
+      " ": handleSpaceKey,
+    };
 
-    if (event.key === "Enter") {
-      //enter key pressed
+    const handler = keyHandlers[event.key];
+    if (handler) {
+      handler(
+        event,
+        currentDivNode,
+        currentSpanNode,
+        currentBlockCleanContent,
+        textBeforeCaret,
+        textAfterCaret
+      );
+    }
+
+    setLastKeyPressed(event.key);
+  };
+
+  const handleLeftArrowKey: KeyHandler = (
+    event,
+    currentDivNode,
+    currentSpanNode,
+    currentBlockCleanContent,
+    textBeforeCaret,
+    textAfterCaret
+  ) => {
+    if (textBeforeCaret === "\u200B") {
       event.preventDefault();
-      currentDivNode.appendNewEditableDivAfter();
-    } else if (event.key === "Backspace" && textBeforeCaret === "\u200B") {
-      if (
-        currentDivNode instanceof EditableBlockElement ||
-        currentSpanNode instanceof EditableBulletSpanElement ||
-        currentSpanNode instanceof EditableHeaderSpanElement
-      ) {
-        if (currentDivNode.parentNode.firstChild === currentDivNode) {
-          event.preventDefault(); // if the first editable div do nothing
-        } else {
-          // merge content from this file in plain text to the previous div
-          const previousDivNode =
-            currentDivNode.previousSibling as EditableDivElement;
-          previousDivNode.content.textContent +=
-            currentDivNode.getCleanTextContent();
-          currentDivNode.remove();
-          previousDivNode.setCaretAtStart();
-        }
-      } else {
-        // handle backspace when it is at end of content of header or bullet
-        console.log("converting to editable div since space bad");
-        event.preventDefault();
-        currentDivNode.convertToEditableBlock(true);
+      const previousEditableSpan = (
+        isInitialSpanElement(currentDivNode, currentSpanNode) //if intial span element, set caret to end of previous div
+          ? currentDivNode.previousElementSibling.lastElementChild
+          : currentSpanNode.previousElementSibling
+      ) as EditableSpanElement;
+      if (previousEditableSpan) {
+        previousEditableSpan.setCaretAtEnd();
       }
     }
+  };
 
-    if (
-      lastKeyPressed === "*" && // this needs to be updated
-      event.key == " " &&
-      currentDivNode instanceof EditableBlockElement && // can't convert is already a bullet
-      currentBlockCleanContent === "*" // make sure that it is the start of the line
-    ) {
-      console.log("Converting to bullet");
+  const handleRightArrowKey: KeyHandler = (
+    event,
+    currentDivNode,
+    currentSpanNode,
+    currentBlockCleanContent,
+    textBeforeCaret,
+    textAfterCaret
+  ) => {
+    if (textAfterCaret === "") {
       event.preventDefault();
-      currentDivNode.replaceWithEditableBullet();
+      const nextSpan = (
+        isFinalSpanElement(currentDivNode, currentSpanNode) //if final span element, set caret to start of next div
+          ? currentDivNode.nextElementSibling.firstChild
+          : currentSpanNode.nextElementSibling
+      ) as EditableSpanElement;
+      if (nextSpan) {
+        nextSpan.setCaretAtStart();
+      }
     }
+  };
 
+  const handleEnterKey: KeyHandler = (
+    event,
+    currentDivNode,
+    currentSpanNode,
+    currentBlockCleanContent,
+    textBeforeCaret,
+    textAfterCaret
+  ) => {
+    event.preventDefault();
+    currentDivNode.appendNewEditableDivAfter();
+  };
+
+  const handleBackspaceKey: KeyHandler = (
+    event,
+    currentDivNode,
+    currentSpanNode,
+    currentBlockCleanContent,
+    textBeforeCaret,
+    textAfterCaret
+  ) => {
+    if (textBeforeCaret !== "\u200B") return;
+
+    if (isInitialSpanElement(currentDivNode, currentSpanNode)) {
+      handleBackspaceForInitialSpan(event, currentDivNode);
+    } else {
+      console.log("converting to editable div since space bad");
+      handleBackspaceForSecondarySpans(event, currentDivNode);
+    }
+  };
+
+  const handleBackspaceForInitialSpan = (
+    event: React.KeyboardEvent,
+    currentDivNode: EditableDivElement
+  ) => {
+    event.preventDefault();
+    if (currentDivNode.parentNode.firstChild === currentDivNode) return;
+
+    const previousDivNode =
+      currentDivNode.previousSibling as EditableDivElement;
+    previousDivNode.content.textContent += currentDivNode.getCleanTextContent();
+    currentDivNode.remove();
+    previousDivNode.setCaretAtEnd();
+  };
+
+  const handleBackspaceForSecondarySpans = (
+    event: React.KeyboardEvent,
+    currentDivNode: EditableDivElement
+  ) => {
+    event.preventDefault();
+    currentDivNode.convertToEditableBlock(true);
+  };
+
+  const handleSpaceKey: KeyHandler = (
+    event,
+    currentDivNode,
+    currentSpanNode,
+    currentBlockCleanContent,
+    textBeforeCaret,
+    textAfterCaret
+  ) => {
     if (
-      lastKeyPressed === "#" && // this needs to be updated
-      event.key === " " &&
+      lastKeyPressed === "*" &&
       currentDivNode instanceof EditableBlockElement &&
-      isValidMarkdownHeading(currentBlockCleanContent) // check if it is a valid markdown heading
+      currentBlockCleanContent === "*"
     ) {
-      console.log("Converting to header");
       event.preventDefault();
+      console.log("Converting to bullet");
+      currentDivNode.replaceWithEditableBullet();
+    } else if (
+      lastKeyPressed === "#" &&
+      currentDivNode instanceof EditableBlockElement &&
+      isValidMarkdownHeading(currentBlockCleanContent)
+    ) {
+      event.preventDefault();
+      console.log("Converting to header");
       currentDivNode.replaceWithEditableHeader(currentBlockCleanContent);
     }
-    //last thing to do is to set the last key pressed
-    setLastKeyPressed(event.key);
   };
 
   return (

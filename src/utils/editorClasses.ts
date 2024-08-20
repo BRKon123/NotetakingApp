@@ -1,5 +1,14 @@
 import { getHeaderTextSizeTailwindClasses } from "./editorOperations";
 
+export type KeyHandler = (
+  event: React.KeyboardEvent,
+  currentDivNode: EditableDivElement,
+  currentSpanNode: EditableSpanElement,
+  currentBlockCleanContent: string,
+  textBeforeCaret: string,
+  textAfterCaret: string
+) => void;
+
 export class EditableSpanElement extends HTMLSpanElement {
   constructor() {
     super();
@@ -13,13 +22,21 @@ export class EditableSpanElement extends HTMLSpanElement {
     return this;
   }
 
-  setCaretAtStart() {
+  setCaretPosition(position: number) {
     const range = document.createRange();
     const selection = window.getSelection();
-    range.setStart(this.firstChild, this.textContent.length); // Set the caret at the start of the content actual text node
+    range.setStart(this.firstChild, position);
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
+  }
+
+  setCaretAtStart() {
+    this.setCaretPosition(1);
+  }
+
+  setCaretAtEnd() {
+    this.setCaretPosition(this.textContent.length);
   }
 
   // Return the text content excluding zero-width spaces
@@ -91,12 +108,12 @@ export class EditableDivElement extends HTMLDivElement {
   appendNewEditableDivAfter(): void {
     const newDiv = createEditableBlock();
     this.after(newDiv);
-    newDiv.setCaretAtStart();
+    newDiv.setCaretAtEnd();
   }
 
-  setCaretAtStart() {
+  setCaretAtEnd() {
     if (this.content) {
-      this.content.setCaretAtStart();
+      this.content.setCaretAtEnd();
     }
   }
 
@@ -110,13 +127,13 @@ export class EditableBlockElement extends EditableDivElement {
   replaceWithEditableBullet(): void {
     const newBullet = createEditableBullet();
     this.replaceWith(newBullet);
-    newBullet.setCaretAtStart();
+    newBullet.setCaretAtEnd();
   }
 
   replaceWithEditableHeader(headingString: string): void {
     const newHeader = createEditableHeader(headingString);
     this.replaceWith(newHeader);
-    newHeader.setCaretAtStart();
+    newHeader.setCaretAtEnd();
   }
 }
 
@@ -145,7 +162,7 @@ export class EditableBulletElement extends EditableDivElement {
       : this.getCleanTextContent();
     const newDiv = createEditableBlock(newDivContentString); // bullet doesn't work here, asterix only
     this.replaceWith(newDiv);
-    newDiv.setCaretAtStart();
+    newDiv.setCaretAtEnd();
     return newDiv;
   }
 
@@ -190,7 +207,7 @@ export class EditableHeaderElement extends EditableDivElement {
       : this.getCleanTextContent();
     const newDiv = createEditableBlock(newDivContentString);
     this.replaceWith(newDiv);
-    newDiv.setCaretAtStart();
+    newDiv.setCaretAtEnd();
     return newDiv;
   }
 

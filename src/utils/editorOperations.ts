@@ -1,4 +1,8 @@
 import {
+  EditableBlockElement,
+  EditableContentSpanElement,
+  EditableBulletSpanElement,
+  EditableHeaderSpanElement,
   EditableDivElement,
   EditableSpanElement,
   createEditableBlock,
@@ -64,4 +68,25 @@ export const getCurrentNodeInfo = () => {
     textAfterCaret,
     currentSpanNode,
   };
+};
+
+export const isInitialSpanElement = (
+  currentDivNode: EditableDivElement,
+  currentSpanNode: EditableSpanElement
+): boolean => {
+  return (
+    currentDivNode instanceof EditableBlockElement ||
+    currentSpanNode instanceof EditableBulletSpanElement ||
+    currentSpanNode instanceof EditableHeaderSpanElement
+  );
+};
+
+export const isFinalSpanElement = (
+  currentDivNode: EditableDivElement,
+  currentSpanNode: EditableSpanElement
+): boolean => {
+  return (
+    currentDivNode instanceof EditableBlockElement ||
+    currentSpanNode instanceof EditableContentSpanElement
+  );
 };
